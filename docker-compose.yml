@@ -1,0 +1,15 @@
+services:
+  ecommerce-db:
+    image: postgres:latest
+    container_name: ecommerce-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=ecommerce_db
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+    volumes:
+      - ecommerce_data:/var/lib/postgresql
+
+volumes:
+  ecommerce_data:

@@ -17,10 +17,28 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));
+    }
+
     public Category createCategory(Category category) {
         if (categoryRepository.existsByName(category.getName())) {
             throw new IllegalArgumentException("Category with name " + category.getName() + " already exists");
         }
         return categoryRepository.save(category);
+    }
+
+    public Category updateCategory(Long id, Category categoryDetails) {
+        Category categoryToUpdate = getCategoryById(id);
+        categoryToUpdate.setName(categoryDetails.getName());
+        return categoryRepository.save(categoryToUpdate);
+    }
+
+    public void deleteCategory(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new RuntimeException("Category not found with ID: " + id);
+        }
+        categoryRepository.deleteById(id);
     }
 }

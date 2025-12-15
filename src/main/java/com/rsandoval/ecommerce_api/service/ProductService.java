@@ -24,13 +24,48 @@ public class ProductService {
         return productRepository.findByCategoryId(categoryId);
     }
 
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+    }
+
     public Product createProduct(Product product, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + categoryId));
 
         // Set the relationship
         product.setCategory(category);
 
         return productRepository.save(product);
+    }
+
+    public Product updateProduct(Long id, Product productDetails) {
+        Product productToUpdate = getProductById(id);
+
+        productToUpdate.setName(productDetails.getName());
+        productToUpdate.setDescription(productDetails.getDescription());
+        productToUpdate.setPrice(productDetails.getPrice());
+        productToUpdate.setStockQuantity(productDetails.getStockQuantity());
+
+        // SAFE CATEGORY UPDATE LOGIC:
+        // TODO: Might want to restrict this ability in production
+        if (productDetails.getCategory() != null && productDetails.getCategory().getId() != null) {
+            Long newCategoryId = productDetails.getCategory().getId();
+
+            Category newCategory = categoryRepository.findById(newCategoryId)
+                    .orElseThrow(() -> new RuntimeException("Category not found with ID: " + newCategoryId));
+
+            productToUpdate.setCategory(newCategory);
+        }
+
+        return productRepository.save(productToUpdate);
+    }
+
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Product not found with ID: " + id);
+        }
+
+        productRepository.deleteById(id);
     }
 }

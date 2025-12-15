@@ -25,7 +25,7 @@ public class Product {
     private Integer stockQuantity;
 
     // Many Products belong to ONE Category
-    @ManyToOne
+    @ManyToOne // TODO: Consider switching to FetchType.LAZY if Category object becomes bloated
     @JoinColumn(name = "category_id", nullable = false) // Creates FK column in the DB
     private Category category;
 }

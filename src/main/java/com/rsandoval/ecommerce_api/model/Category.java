@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class Category {
 
     // One Category has MANY products
     // TODO: (Production Readiness) Change CascadeType.ALL to CascadeType.PERSIST and MERGE for final deployment to prevent accidental deletions of associated entities.
+    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products;
 }

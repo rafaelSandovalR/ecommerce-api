@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
     }
 
     public Category createCategory(Category category) {
@@ -37,7 +38,7 @@ public class CategoryService {
 
     public void deleteCategory(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Category not found with ID: " + id);
+            throw new ResourceNotFoundException("Category not found with ID: " + id);
         }
         categoryRepository.deleteById(id);
     }

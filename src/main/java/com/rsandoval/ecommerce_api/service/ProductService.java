@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
@@ -26,12 +27,12 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
     }
 
     public Product createProduct(Product product, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
 
         // Set the relationship
         product.setCategory(category);
@@ -53,7 +54,7 @@ public class ProductService {
             Long newCategoryId = productDetails.getCategory().getId();
 
             Category newCategory = categoryRepository.findById(newCategoryId)
-                    .orElseThrow(() -> new RuntimeException("Category not found with ID: " + newCategoryId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + newCategoryId));
 
             productToUpdate.setCategory(newCategory);
         }
@@ -63,7 +64,7 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found with ID: " + id);
+            throw new ResourceNotFoundException("Product not found with ID: " + id);
         }
 
         productRepository.deleteById(id);

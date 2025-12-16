@@ -2,8 +2,8 @@ package com.rsandoval.ecommerce_api.controller;
 
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +28,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         Category savedCategory = categoryService.createCategory(category);
         return ResponseEntity
                 .created(URI.create("/api/categories/" + savedCategory.getId()))
@@ -36,7 +36,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category category) {
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category) {
         return ResponseEntity.ok(categoryService.updateCategory(id, category));
     }
 

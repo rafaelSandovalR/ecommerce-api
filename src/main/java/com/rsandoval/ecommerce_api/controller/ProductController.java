@@ -2,8 +2,8 @@ package com.rsandoval.ecommerce_api.controller;
 
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +34,7 @@ public class ProductController {
 
     // Endpoint: POST /api/products?categoryId=1
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product, @RequestParam Long categoryId) {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product, @RequestParam Long categoryId) {
         Product savedProduct = productService.createProduct(product, categoryId);
         return ResponseEntity
                 .created(URI.create("/api/products/" + savedProduct.getId()))
@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
         return ResponseEntity.ok(productService.updateProduct(id, product));
     }
 

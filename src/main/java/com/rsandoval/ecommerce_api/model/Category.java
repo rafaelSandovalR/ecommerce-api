@@ -2,6 +2,7 @@ package com.rsandoval.ecommerce_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class Category {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Category name is required") // Rule: String cannot be null or empty spaces
     private String name;
 
     // One Category has MANY products

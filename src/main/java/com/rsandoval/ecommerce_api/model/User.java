@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,5 +23,7 @@ public class User {
     @NotBlank(message = "Name is required")
     private String name;
 
-    //TODO: A User has ONE Cart; Add Cart field
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
 }

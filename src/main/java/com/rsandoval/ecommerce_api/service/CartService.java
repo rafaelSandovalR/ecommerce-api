@@ -49,6 +49,15 @@ public class CartService {
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
 
+        int currentQtyInCart = existingItem.map(CartItem::getQuantity).orElse(0);
+        int newTotalQty = currentQtyInCart + quantity;
+        // Check against inventory
+        if (newTotalQty > product.getStockQuantity()) {
+            throw new IllegalArgumentException(
+                    "Insufficient stock. You are requesting " + newTotalQty + " in cart. Product stock is " + product.getStockQuantity()
+            );
+        }
+
         if (existingItem.isPresent()) {
             // Scenario A: Item exists, just update quantity
             CartItem item = existingItem.get();

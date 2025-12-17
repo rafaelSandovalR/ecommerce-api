@@ -1,0 +1,36 @@
+package com.rsandoval.ecommerce_api.controller;
+
+import com.rsandoval.ecommerce_api.model.Order;
+import com.rsandoval.ecommerce_api.service.OrderService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/orders")
+@RequiredArgsConstructor
+public class OrderController {
+
+    private final OrderService orderService;
+
+    @PostMapping("/{userId}/place")
+    public ResponseEntity<Order> placeOrder(@PathVariable Long userId) {
+        Order placedOrder = orderService.placeOrder(userId);
+        return ResponseEntity
+                .created(URI.create("/api/orders/" + placedOrder.getId()))
+                .body(placedOrder);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
+        return ResponseEntity.ok(orderService.getUserOrders(userId));
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<Order> getOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrder(orderId));
+    }
+}

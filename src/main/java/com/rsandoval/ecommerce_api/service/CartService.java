@@ -5,7 +5,6 @@ import com.rsandoval.ecommerce_api.model.Cart;
 import com.rsandoval.ecommerce_api.model.CartItem;
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.model.User;
-import com.rsandoval.ecommerce_api.repository.CartItemRepository;
 import com.rsandoval.ecommerce_api.repository.CartRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import com.rsandoval.ecommerce_api.repository.UserRepository;

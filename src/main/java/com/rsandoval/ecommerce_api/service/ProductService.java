@@ -1,5 +1,7 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.dto.ProductRequest;
+import com.rsandoval.ecommerce_api.dto.ProductResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
@@ -16,57 +18,68 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::toDTO)
+                .toList();
     }
 
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+    public List<ProductResponse> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId)
+                .stream()
+                .map(productMapper::toDTO)
+                .toList();
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
+    public ProductResponse getProductById(Long productId) {
+        Product product = findProduct(productId);
+        return productMapper.toDTO(product);
     }
 
-    public Product createProduct(Product product, Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+    public ProductResponse createProduct(ProductRequest request) {
+        Category category = findCategory(request.getCategoryId());
 
-        // Set the relationship
-        product.setCategory(category);
+        Product product = productMapper.toEntity(request, category);
+        Product savedProduct = productRepository.save(product);
 
-        return productRepository.save(product);
+        return productMapper.toDTO(savedProduct);
     }
 
-    public Product updateProduct(Long id, Product productDetails) {
-        Product productToUpdate = getProductById(id);
+    public ProductResponse updateProduct(Long productId, ProductRequest request) {
+        Product productToUpdate = findProduct(productId);
 
-        productToUpdate.setName(productDetails.getName());
-        productToUpdate.setDescription(productDetails.getDescription());
-        productToUpdate.setPrice(productDetails.getPrice());
-        productToUpdate.setStockQuantity(productDetails.getStockQuantity());
+        productToUpdate.setName(request.getName());
+        productToUpdate.setDescription(request.getDescription());
+        productToUpdate.setPrice(request.getPrice());
+        productToUpdate.setStockQuantity(request.getStockQuantity());
 
-        // SAFE CATEGORY UPDATE LOGIC:
         // TODO: Might want to restrict this ability in production
-        if (productDetails.getCategory() != null && productDetails.getCategory().getId() != null) {
-            Long newCategoryId = productDetails.getCategory().getId();
+        Category newCategory = findCategory(request.getCategoryId());
+        productToUpdate.setCategory(newCategory);
 
-            Category newCategory = categoryRepository.findById(newCategoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + newCategoryId));
-
-            productToUpdate.setCategory(newCategory);
-        }
-
-        return productRepository.save(productToUpdate);
+        Product updatedProduct = productRepository.save(productToUpdate);
+        return productMapper.toDTO(updatedProduct);
     }
 
-    public void deleteProduct(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Product not found with ID: " + id);
+    public void deleteProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product not found with ID: " + productId);
         }
 
-        productRepository.deleteById(id);
+        productRepository.deleteById(productId);
     }
+
+    private Category findCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
+    }
+
 }

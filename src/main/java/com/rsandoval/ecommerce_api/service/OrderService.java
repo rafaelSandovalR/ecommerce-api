@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.dto.OrderResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.model.*;
 import com.rsandoval.ecommerce_api.repository.OrderRepository;
@@ -18,9 +19,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CartService cartService;
+    private final OrderMapper orderMapper;
 
     @Transactional
-    public Order placeOrder(Long userId){
+    public OrderResponse placeOrder(Long userId){
         Cart cart = cartService.getCartByUserId(userId);
         if (cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot place order with empty cart");
@@ -60,15 +62,20 @@ public class OrderService {
         // 4. Clear Cart
         cartService.clearCart(userId);
 
-        return savedOrder;
+        return orderMapper.toDTO(savedOrder);
     }
 
-    public List<Order> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public List<OrderResponse> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId)
+                .stream()
+                .map(orderMapper::toDTO)
+                .toList();
     }
 
-    public Order getOrder(Long orderId) {
-        return orderRepository.findById(orderId)
+    public OrderResponse getOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID" + orderId));
+
+        return orderMapper.toDTO(order);
     }
 }

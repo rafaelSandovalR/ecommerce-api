@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.controller;
 
+import com.rsandoval.ecommerce_api.dto.OrderResponse;
 import com.rsandoval.ecommerce_api.model.Order;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +18,20 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{userId}/place")
-    public ResponseEntity<Order> placeOrder(@PathVariable Long userId) {
-        Order placedOrder = orderService.placeOrder(userId);
+    public ResponseEntity<OrderResponse> placeOrder(@PathVariable Long userId) {
+        OrderResponse placedOrder = orderService.placeOrder(userId);
         return ResponseEntity
                 .created(URI.create("/api/orders/" + placedOrder.getId()))
                 .body(placedOrder);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getUserOrders(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Long userId) {
         return ResponseEntity.ok(orderService.getUserOrders(userId));
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrder(orderId));
     }
 }

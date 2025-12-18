@@ -2,7 +2,7 @@ package com.rsandoval.ecommerce_api.service;
 
 import com.rsandoval.ecommerce_api.dto.UserRequest;
 import com.rsandoval.ecommerce_api.model.User;
-import com.rsandoval.ecommerce_api.model.UserResponse;
+import com.rsandoval.ecommerce_api.dto.UserResponse;
 import org.springframework.stereotype.Component;
 
 @Component

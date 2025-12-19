@@ -35,12 +35,12 @@ public class ProductService {
     }
 
     public ProductResponse getProductById(Long productId) {
-        Product product = findProduct(productId);
+        Product product = getProductEntity(productId);
         return productMapper.toDTO(product);
     }
 
     public ProductResponse createProduct(ProductRequest request) {
-        Category category = findCategory(request.getCategoryId());
+        Category category = getCategoryEntity(request.getCategoryId());
 
         Product product = productMapper.toEntity(request, category);
         Product savedProduct = productRepository.save(product);
@@ -49,7 +49,7 @@ public class ProductService {
     }
 
     public ProductResponse updateProduct(Long productId, ProductRequest request) {
-        Product productToUpdate = findProduct(productId);
+        Product productToUpdate = getProductEntity(productId);
 
         productToUpdate.setName(request.getName());
         productToUpdate.setDescription(request.getDescription());
@@ -57,7 +57,7 @@ public class ProductService {
         productToUpdate.setStockQuantity(request.getStockQuantity());
 
         // TODO: Might want to restrict this ability in production
-        Category newCategory = findCategory(request.getCategoryId());
+        Category newCategory = getCategoryEntity(request.getCategoryId());
         productToUpdate.setCategory(newCategory);
 
         Product updatedProduct = productRepository.save(productToUpdate);
@@ -72,12 +72,12 @@ public class ProductService {
         productRepository.deleteById(productId);
     }
 
-    private Category findCategory(Long categoryId) {
+    private Category getCategoryEntity(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
     }
 
-    private Product findProduct(Long productId) {
+    private Product getProductEntity(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
     }

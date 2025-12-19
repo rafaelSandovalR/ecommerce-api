@@ -41,7 +41,7 @@ public class CategoryService {
     }
 
     public CategoryResponse updateCategory(Long categoryId, CategoryRequest request) {
-        Category categoryToUpdate = findCategory(categoryId);
+        Category categoryToUpdate = getCategoryEntity(categoryId);
         categoryToUpdate.setName(request.getName());
         Category updatedCategory = categoryRepository.save(categoryToUpdate);
         return categoryMapper.toDTO(updatedCategory);
@@ -54,7 +54,7 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    private Category findCategory(Long categoryId) {
+    private Category getCategoryEntity(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID:" + categoryId));
     }

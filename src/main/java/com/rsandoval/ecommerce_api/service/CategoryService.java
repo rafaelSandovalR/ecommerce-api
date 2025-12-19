@@ -1,5 +1,7 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.dto.CategoryRequest;
+import com.rsandoval.ecommerce_api.dto.CategoryResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
@@ -13,27 +15,36 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAllCategories() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::toDTO)
+                .toList();
     }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+    public CategoryResponse getCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+
+        return categoryMapper.toDTO(category);
     }
 
-    public Category createCategory(Category category) {
-        if (categoryRepository.existsByName(category.getName())) {
-            throw new IllegalArgumentException("Category with name " + category.getName() + " already exists");
+    public CategoryResponse createCategory(CategoryRequest request) {
+        if (categoryRepository.existsByName(request.getName())) {
+            throw new IllegalArgumentException("Category with name " + request.getName() + " already exists");
         }
-        return categoryRepository.save(category);
+        Category category = categoryMapper.toEntity(request);
+        Category savedCategory = categoryRepository.save(category);
+        return categoryMapper.toDTO(savedCategory);
     }
 
-    public Category updateCategory(Long id, Category categoryDetails) {
-        Category categoryToUpdate = getCategoryById(id);
-        categoryToUpdate.setName(categoryDetails.getName());
-        return categoryRepository.save(categoryToUpdate);
+    public CategoryResponse updateCategory(Long categoryId, CategoryRequest request) {
+        Category categoryToUpdate = findCategory(categoryId);
+        categoryToUpdate.setName(request.getName());
+        Category updatedCategory = categoryRepository.save(categoryToUpdate);
+        return categoryMapper.toDTO(updatedCategory);
     }
 
     public void deleteCategory(Long id) {
@@ -41,5 +52,10 @@ public class CategoryService {
             throw new ResourceNotFoundException("Category not found with ID: " + id);
         }
         categoryRepository.deleteById(id);
+    }
+
+    private Category findCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID:" + categoryId));
     }
 }

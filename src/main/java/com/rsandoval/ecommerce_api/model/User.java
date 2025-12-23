@@ -17,13 +17,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "Name is required")
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String password; // Will hold the BCrypt Hash
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

@@ -6,6 +6,7 @@ import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.dto.UserResponse;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
@@ -25,7 +27,10 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already in use");
         }
-        User user = userMapper.toEntity(request);
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User user = userMapper.toEntity(request, encodedPassword);
+
         User savedUser = userRepository.save(user);
         return userMapper.toDTO(savedUser);
     }

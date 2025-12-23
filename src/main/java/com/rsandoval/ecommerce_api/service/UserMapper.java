@@ -1,6 +1,7 @@
 package com.rsandoval.ecommerce_api.service;
 
 import com.rsandoval.ecommerce_api.dto.UserRequest;
+import com.rsandoval.ecommerce_api.model.Role;
 import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.dto.UserResponse;
 import org.springframework.stereotype.Component;
@@ -16,10 +17,12 @@ public class UserMapper {
         return dto;
     }
 
-    public User toEntity(UserRequest request) {
+    public User toEntity(UserRequest request, String encodedPassword) {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setPassword(encodedPassword);
+        user.setRole(Role.ROLE_USER);
         return user;
     }
 }

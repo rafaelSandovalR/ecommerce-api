@@ -35,6 +35,6 @@ public class User {
     private Cart cart;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 }

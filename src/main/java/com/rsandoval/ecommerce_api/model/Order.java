@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.model;
 
+import com.rsandoval.ecommerce_api.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,9 +1,9 @@
-package com.rsandoval.ecommerce_api.service;
+package com.rsandoval.ecommerce_api.mapper;
 
-import com.rsandoval.ecommerce_api.dto.UserRequest;
-import com.rsandoval.ecommerce_api.model.Role;
+import com.rsandoval.ecommerce_api.dto.user.UserRequest;
+import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.User;
-import com.rsandoval.ecommerce_api.dto.UserResponse;
+import com.rsandoval.ecommerce_api.dto.user.UserResponse;
 import org.springframework.stereotype.Component;
 
 @Component

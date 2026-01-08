@@ -1,14 +1,13 @@
 package com.rsandoval.ecommerce_api.controller;
 
-import com.rsandoval.ecommerce_api.dto.UserRequest;
-import com.rsandoval.ecommerce_api.dto.UserResponse;
+import com.rsandoval.ecommerce_api.dto.user.UserResponse;
 import com.rsandoval.ecommerce_api.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")

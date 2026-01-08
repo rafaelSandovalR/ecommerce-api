@@ -1,7 +1,7 @@
-package com.rsandoval.ecommerce_api.service;
+package com.rsandoval.ecommerce_api.mapper;
 
-import com.rsandoval.ecommerce_api.dto.OrderItemDto;
-import com.rsandoval.ecommerce_api.dto.OrderResponse;
+import com.rsandoval.ecommerce_api.dto.order.OrderItemDto;
+import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.model.Order;
 import com.rsandoval.ecommerce_api.model.OrderItem;
 import org.springframework.stereotype.Component;

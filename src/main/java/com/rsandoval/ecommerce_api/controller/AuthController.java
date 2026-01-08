@@ -1,9 +1,9 @@
 package com.rsandoval.ecommerce_api.controller;
 
-import com.rsandoval.ecommerce_api.dto.AuthResponse;
-import com.rsandoval.ecommerce_api.dto.LoginRequest;
-import com.rsandoval.ecommerce_api.dto.UserRequest;
-import com.rsandoval.ecommerce_api.dto.UserResponse;
+import com.rsandoval.ecommerce_api.dto.auth.AuthResponse;
+import com.rsandoval.ecommerce_api.dto.auth.LoginRequest;
+import com.rsandoval.ecommerce_api.dto.user.UserRequest;
+import com.rsandoval.ecommerce_api.dto.user.UserResponse;
 import com.rsandoval.ecommerce_api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

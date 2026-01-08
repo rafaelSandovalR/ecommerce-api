@@ -1,9 +1,8 @@
 package com.rsandoval.ecommerce_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rsandoval.ecommerce_api.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;

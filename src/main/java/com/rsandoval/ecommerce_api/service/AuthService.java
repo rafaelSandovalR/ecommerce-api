@@ -1,9 +1,10 @@
 package com.rsandoval.ecommerce_api.service;
 
-import com.rsandoval.ecommerce_api.dto.AuthResponse;
-import com.rsandoval.ecommerce_api.dto.LoginRequest;
-import com.rsandoval.ecommerce_api.dto.UserRequest;
-import com.rsandoval.ecommerce_api.dto.UserResponse;
+import com.rsandoval.ecommerce_api.dto.auth.AuthResponse;
+import com.rsandoval.ecommerce_api.dto.auth.LoginRequest;
+import com.rsandoval.ecommerce_api.dto.user.UserRequest;
+import com.rsandoval.ecommerce_api.dto.user.UserResponse;
+import com.rsandoval.ecommerce_api.mapper.UserMapper;
 import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import com.rsandoval.ecommerce_api.security.JwtUtils;

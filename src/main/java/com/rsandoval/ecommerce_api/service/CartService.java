@@ -1,9 +1,9 @@
 package com.rsandoval.ecommerce_api.service;
 
-import com.rsandoval.ecommerce_api.dto.CartItemDto;
-import com.rsandoval.ecommerce_api.dto.CartRequest;
-import com.rsandoval.ecommerce_api.dto.CartResponse;
+import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
+import com.rsandoval.ecommerce_api.dto.cart.CartResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
+import com.rsandoval.ecommerce_api.mapper.CartMapper;
 import com.rsandoval.ecommerce_api.model.Cart;
 import com.rsandoval.ecommerce_api.model.CartItem;
 import com.rsandoval.ecommerce_api.model.Product;

@@ -1,4 +1,4 @@
-package com.rsandoval.ecommerce_api.dto;
+package com.rsandoval.ecommerce_api.dto.category;
 
 import lombok.Data;
 

@@ -1,7 +1,9 @@
 package com.rsandoval.ecommerce_api.service;
 
-import com.rsandoval.ecommerce_api.dto.OrderResponse;
+import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
+import com.rsandoval.ecommerce_api.enums.OrderStatus;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
+import com.rsandoval.ecommerce_api.mapper.OrderMapper;
 import com.rsandoval.ecommerce_api.model.*;
 import com.rsandoval.ecommerce_api.repository.OrderRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;

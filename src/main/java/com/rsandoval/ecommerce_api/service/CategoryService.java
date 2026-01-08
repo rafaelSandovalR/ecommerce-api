@@ -1,8 +1,9 @@
 package com.rsandoval.ecommerce_api.service;
 
-import com.rsandoval.ecommerce_api.dto.CategoryRequest;
-import com.rsandoval.ecommerce_api.dto.CategoryResponse;
+import com.rsandoval.ecommerce_api.dto.category.CategoryRequest;
+import com.rsandoval.ecommerce_api.dto.category.CategoryResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
+import com.rsandoval.ecommerce_api.mapper.CategoryMapper;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;

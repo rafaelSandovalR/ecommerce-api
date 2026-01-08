@@ -1,7 +1,6 @@
 package com.rsandoval.ecommerce_api.controller;
 
-import com.rsandoval.ecommerce_api.dto.OrderResponse;
-import com.rsandoval.ecommerce_api.model.Order;
+import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

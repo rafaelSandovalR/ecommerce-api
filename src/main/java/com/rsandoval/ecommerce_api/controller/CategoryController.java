@@ -1,7 +1,7 @@
 package com.rsandoval.ecommerce_api.controller;
 
-import com.rsandoval.ecommerce_api.dto.CategoryRequest;
-import com.rsandoval.ecommerce_api.dto.CategoryResponse;
+import com.rsandoval.ecommerce_api.dto.category.CategoryRequest;
+import com.rsandoval.ecommerce_api.dto.category.CategoryResponse;
 import com.rsandoval.ecommerce_api.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

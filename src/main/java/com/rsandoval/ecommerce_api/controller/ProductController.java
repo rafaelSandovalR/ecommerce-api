@@ -1,7 +1,7 @@
 package com.rsandoval.ecommerce_api.controller;
 
-import com.rsandoval.ecommerce_api.dto.ProductRequest;
-import com.rsandoval.ecommerce_api.dto.ProductResponse;
+import com.rsandoval.ecommerce_api.dto.product.ProductRequest;
+import com.rsandoval.ecommerce_api.dto.product.ProductResponse;
 import com.rsandoval.ecommerce_api.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

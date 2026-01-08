@@ -23,15 +23,4 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
-    public UserResponse createUser(UserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already in use");
-        }
-
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = userMapper.toEntity(request, encodedPassword);
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
-    }
 }

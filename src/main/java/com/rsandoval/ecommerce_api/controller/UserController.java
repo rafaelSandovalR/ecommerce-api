@@ -20,12 +20,4 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
-
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
-        UserResponse createdUser = userService.createUser(request);
-        return ResponseEntity
-                .created( URI.create("/api/users/" + createdUser.getId()))
-                .body(createdUser);
-    }
 }

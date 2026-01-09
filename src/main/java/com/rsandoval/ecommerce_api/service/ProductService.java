@@ -9,7 +9,10 @@ import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -21,18 +24,17 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toDTO)
-                .toList();
+    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(productMapper::toDTO);
     }
 
-    public List<ProductResponse> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId)
-                .stream()
-                .map(productMapper::toDTO)
-                .toList();
+    public Page<ProductResponse> getProductsByCategory(Long categoryId, Pageable pageable) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new ResourceNotFoundException("Category not found");
+        }
+        return productRepository.findByCategoryId(categoryId, pageable)
+                .map(productMapper::toDTO);
     }
 
     public ProductResponse getProductById(Long productId) {

@@ -21,9 +21,17 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponse>> searchProducts(
+            @RequestParam String query,
+            @PageableDefault(size = 20, sort = "name") Pageable pageable
+    ) {
+        return ResponseEntity.ok(productService.searchProducts(query, pageable));
+    }
+
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
-            @PageableDefault(size = 20, sort = "name")Pageable pageable
+            @PageableDefault(size = 20, sort = "name") Pageable pageable
     ) {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }

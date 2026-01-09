@@ -9,6 +9,8 @@ import com.rsandoval.ecommerce_api.repository.OrderRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final CartService cartService;
     private final OrderMapper orderMapper;
+    private final AuthService authService;
 
     @Transactional
     public OrderResponse placeOrder(Long userId){
@@ -67,11 +70,10 @@ public class OrderService {
         return orderMapper.toDTO(savedOrder);
     }
 
-    public List<OrderResponse> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(orderMapper::toDTO)
-                .toList();
+    public Page<OrderResponse> getUserOrders(Pageable pageable) {
+        User user = authService.getCurrentUser();
+        return orderRepository.findByUser(user, pageable)
+                .map(orderMapper::toDTO);
     }
 
     public OrderResponse getOrder(Long orderId) {

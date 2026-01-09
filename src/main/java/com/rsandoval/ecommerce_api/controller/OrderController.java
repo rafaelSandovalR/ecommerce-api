@@ -3,6 +3,10 @@ package com.rsandoval.ecommerce_api.controller;
 import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +29,10 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.getUserOrders(userId));
+    public ResponseEntity<Page<OrderResponse>> getUserOrders(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            ) {
+        return ResponseEntity.ok(orderService.getUserOrders(pageable));
     }
 
     @GetMapping("/{orderId}")

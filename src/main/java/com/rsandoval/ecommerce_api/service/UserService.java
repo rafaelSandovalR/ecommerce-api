@@ -6,6 +6,8 @@ import com.rsandoval.ecommerce_api.mapper.UserMapper;
 import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,11 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         return userMapper.toDTO(user);
+    }
+
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userMapper::toDTO);
     }
 
 }

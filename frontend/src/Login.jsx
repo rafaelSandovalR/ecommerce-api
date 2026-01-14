@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,9 +25,9 @@ export default function Login() {
             }
 
             const data = await response.json();
-            alert("Login Successful! Token: " + data.token); // Temporary
 
-            // TODO: Save token and redirect
+            localStorage.setItem("token", data.token);
+            navigate("/"); // Redirect user to the Home page
 
         } catch (err) {
             setError(err.message);

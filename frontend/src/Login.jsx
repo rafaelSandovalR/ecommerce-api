@@ -27,6 +27,8 @@ export default function Login() {
             const data = await response.json();
 
             localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.id);
+            
             navigate("/"); // Redirect user to the Home page
 
         } catch (err) {

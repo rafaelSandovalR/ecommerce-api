@@ -5,6 +5,7 @@ export default function Home() {
   const [products, setProducts] = useState([]); // Holds the list of products
   const [loading, setLoading] = useState(true); // Tracks if we are still waiting
   const [error, setError] = useState(null);
+  const [addingId, setAddingId] = useState(null); 
 
   // The "Effect" Hook: Runs once when the page loads
   useEffect(() => {
@@ -22,7 +23,8 @@ export default function Home() {
         }
 
         const data = await response.json();
-        setProducts(data.content); // Save the data to our state
+        // Handle Spring Page vs List
+        setProducts(data.content || data || []); // Save the data to our state
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,6 +34,47 @@ export default function Home() {
 
     fetchProducts();
   }, []); // The empty [] means: "Only run this ONE time on startup"
+
+  const addToCart = async (productId) => {
+    setAddingId(productId); // Show loading state on the specific button
+
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        alert("User ID missing. Please log out and log in again.");
+        return;
+      }
+
+      // Matches Backend CartRequest DTO
+      const cartRequest = {
+        productId: productId,
+        quantity: 1
+      }
+
+      const response = await fetch(`http://localhost:8080/api/carts/${userId}/add`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" // CRUCIAL: Tells Java this is a DTO
+        },
+        body: JSON.stringify(cartRequest) 
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add item");
+      }
+
+      alert("Item added to cart!");
+    } catch (err) {
+      console.error(err);
+      alert("Error adding item: " + err.message);
+    } finally {
+      setAddingId(null);
+    }
+  };
+
 
   if (loading) return <div className="text-center mt-20">Loading products...</div>;
   if (error) return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
@@ -60,14 +103,19 @@ export default function Home() {
                 <p className="text-gray-600 mt-2 text-sm">{product.description}</p>
                 <div className="mt-4 flex justify-between items-center">
                   <span className="text-blue-600 font-bold text-lg">${product.price}</span>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    Add to Cart
+                  <button 
+                    onClick={() => addToCart(product.id)}
+                    disabled={addingId === product.id} // Disable if currently adding this
+                    className={`px-4 py-2 rounded-md transition text-white ${
+                      addingId === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+                  >
+                    {addingId === product.id ? "Adding..." : "Add to Cart"}
                   </button>
                 </div>
               </div>
             </div>
           ))}
-
         </div>
       </div>
     </div>

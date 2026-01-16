@@ -28,6 +28,9 @@ public class Order {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
+    @Column(nullable = false)
+    private String shippingAddress;
+
     @Enumerated(EnumType.STRING) // Stores "PAID" as text in DB instead of 1
     private OrderStatus status;
 

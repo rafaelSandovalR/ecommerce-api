@@ -27,7 +27,7 @@ public class OrderService {
     private final AuthService authService;
 
     @Transactional
-    public OrderResponse placeOrder(Long userId){
+    public OrderResponse placeOrder(Long userId, String shippingAddress){
         Cart cart = cartService.getCartEntity(userId);
         if (cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot place order with empty cart");
@@ -38,6 +38,7 @@ public class OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(cart.getTotalPrice());
+        order.setShippingAddress(shippingAddress);
 
         // 2. Process Items (Move from Cart -> Order & Reduce Stock) (Use stream)
         List<OrderItem> orderItems = cart.getItems().stream().map(cartItem -> {

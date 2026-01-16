@@ -1,6 +1,7 @@
 package com.rsandoval.ecommerce_api.controller;
 
 import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
+import com.rsandoval.ecommerce_api.dto.order.PlaceOrderRequest;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,8 +22,11 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{userId}/place")
-    public ResponseEntity<OrderResponse> placeOrder(@PathVariable Long userId) {
-        OrderResponse placedOrder = orderService.placeOrder(userId);
+    public ResponseEntity<OrderResponse> placeOrder(
+            @PathVariable Long userId,
+            @RequestBody PlaceOrderRequest request
+            ) {
+        OrderResponse placedOrder = orderService.placeOrder(userId, request.shippingAddress());
         return ResponseEntity
                 .created(URI.create("/api/orders/" + placedOrder.getId()))
                 .body(placedOrder);

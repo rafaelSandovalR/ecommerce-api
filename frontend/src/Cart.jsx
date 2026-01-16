@@ -133,9 +133,11 @@ export default function Cart() {
                             Total: <span className="text-blue-600">${cart.totalPrice}</span>
                         </div>
 
-                        <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition">
+                        <Link 
+                            to="/checkout" 
+                            className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition inline-block text-center">
                             Checkout
-                        </button>
+                        </Link>
                     </div>
 
                 </div>

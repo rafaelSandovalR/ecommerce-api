@@ -3,6 +3,8 @@ import Login from "./Login";
 import Home from "./Home"
 import ProtectedRoute from "./ProtectedRoute";
 import Cart from "./Cart";
+import Checkout from "./Checkout";
+import OrderSuccess from "./OrderSuccess";
 
 export default function App() {
   return (
@@ -10,6 +12,8 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+      <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+      <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

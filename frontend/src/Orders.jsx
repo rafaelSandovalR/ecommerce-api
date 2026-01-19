@@ -66,16 +66,16 @@ export default function Orders() {
                                         }`}>
                                             {order.status}
                                         </span>
-                                        <spam className="block px-3 font-bold text-gray-800 mt-1">${order.totalPrice}</spam>
+                                        <span className="block font-bold text-gray-800 mt-1">${order.totalPrice}</span>
                                     </div>   
                                 </div>
 
                                 {/* Order Item */}
                                 <div className="p-4">
                                     <h4 className="text-sm font-bold text-gray-500 mb-2">Items</h4>
-                                    <ul>
-                                        {order.items.map((item) => (
-                                            <li key={item.id} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
+                                    <ul className="space-y-2">
+                                        {order.items.map((item, index) => (
+                                            <li key={index} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
                                                 <span>{item.productName} <span className="text-gray-400">x {item.quantity}</span></span>
                                                 <span>${item.totalLinePrice}</span>
                                             </li>

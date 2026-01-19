@@ -15,4 +15,5 @@ public class OrderResponse {
     private BigDecimal totalPrice;
     private String status;
     private List<OrderItemDto> items;
+    private String shippingAddress;
 }

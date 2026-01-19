@@ -19,6 +19,7 @@ public class OrderMapper {
         dto.setOrderDate(order.getOrderDate());
         dto.setTotalPrice(order.getTotalPrice());
         dto.setStatus(order.getStatus().name());
+        dto.setShippingAddress(order.getShippingAddress());
 
         List<OrderItemDto> itemDtos = order.getItems()
                 .stream()

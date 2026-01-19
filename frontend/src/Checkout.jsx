@@ -51,10 +51,9 @@ export default function Checkout() {
 
         try {
             const token = localStorage.getItem("token");
-            const userId = localStorage.getItem("userId");
             const fullAddress = `${address}, ${city}, ${zip}`
 
-            const response = await fetch(`http://localhost:8080/api/orders/${userId}/place`, {
+            const response = await fetch(`http://localhost:8080/api/orders/place`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,

@@ -49,7 +49,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new AuthResponse(token, user.getId(), user.getEmail());
+        return new AuthResponse(token);
     }
 
     public UserResponse register(UserRequest request) {

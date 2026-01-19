@@ -15,30 +15,30 @@ public class CartController {
 
     private final CartService cartService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<CartResponse> getCart(@PathVariable Long userId) {
-        return ResponseEntity.ok(cartService.getCartByUserId(userId));
+    @GetMapping
+    public ResponseEntity<CartResponse> getCart() {
+        return ResponseEntity.ok(cartService.getUserCart());
     }
 
-    @PostMapping("/{userId}/add")
-    public ResponseEntity<CartResponse> addItemToCart(@PathVariable Long userId, @Valid @RequestBody CartRequest request) {
-        return ResponseEntity.ok(cartService.addItemToCart(userId, request));
+    @PostMapping("/add")
+    public ResponseEntity<CartResponse> addItemToCart(@Valid @RequestBody CartRequest request) {
+        return ResponseEntity.ok(cartService.addItemToCart(request));
     }
 
-    @PutMapping("/{userId}/items")
-    public ResponseEntity<CartResponse> updateItemQuantity(@PathVariable Long userId, @Valid @RequestBody CartRequest request) {
-        return ResponseEntity.ok(cartService.updateItemQuantity(userId, request));
+    @PutMapping("/items")
+    public ResponseEntity<CartResponse> updateItemQuantity(@Valid @RequestBody CartRequest request) {
+        return ResponseEntity.ok(cartService.updateItemQuantity(request));
     }
 
-    // DELETE /api/carts/1/remove/5 (where 5 is the cartItemId, not productId)
-    @DeleteMapping("/{userId}/remove/{itemId}")
-    public ResponseEntity<CartResponse> removeItemFromCart(@PathVariable Long userId, @PathVariable Long itemId) {
-        return ResponseEntity.ok(cartService.removeItemFromCart(userId, itemId));
+    // DELETE /api/carts/remove/5 (where 5 is the cartItemId, not productId)
+    @DeleteMapping("/remove/{itemId}")
+    public ResponseEntity<CartResponse> removeItemFromCart(@PathVariable Long itemId) {
+        return ResponseEntity.ok(cartService.removeItemFromCart(itemId));
     }
 
-    @DeleteMapping("/{userId}/clear")
-    public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
-        cartService.clearCart(userId);
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearCart() {
+        cartService.clearCart();
         return ResponseEntity.noContent().build();
     }
 }

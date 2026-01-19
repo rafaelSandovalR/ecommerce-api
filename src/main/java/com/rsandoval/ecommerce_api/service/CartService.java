@@ -26,28 +26,26 @@ public class CartService {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
+    private final AuthService authService;
 
-    public CartResponse getCartByUserId(Long userId) {
+    public CartResponse getUserCart() {
         // Find existing cart or create a new one if none exists
-        Cart cart = getCartEntity(userId);
+        Cart cart = getCartEntity();
         return cartMapper.toDTO(cart);
     }
 
-    private Cart createCartForUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID:" + userId));
-
+    private Cart createCartForUser(User user) {
         Cart cart = new Cart();
         cart.setUser(user);
         return cartRepository.save(cart);
     }
 
     @Transactional // Ensures all steps happen or non happen
-    public CartResponse addItemToCart(Long userId, CartRequest request) {
+    public CartResponse addItemToCart(CartRequest request) {
         Long productId = request.getProductId();
         Integer qty = request.getQuantity();
 
-        Cart cart = getCartEntity(userId);
+        Cart cart = getCartEntity();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
 
@@ -85,10 +83,10 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponse updateItemQuantity(Long userId, CartRequest request) {
+    public CartResponse updateItemQuantity(CartRequest request) {
         Long productId = request.getProductId();
         Integer qty = request.getQuantity();
-        Cart cart = getCartEntity(userId);
+        Cart cart = getCartEntity();
 
         CartItem item = cart.getItems()
                 .stream()
@@ -113,8 +111,8 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponse removeItemFromCart(Long userId, Long cartItemId) {
-        Cart cart = getCartEntity(userId);
+    public CartResponse removeItemFromCart(Long cartItemId) {
+        Cart cart = getCartEntity();
 
         boolean removed = cart.getItems().removeIf(item -> item.getId().equals(cartItemId));
         if (!removed){
@@ -126,8 +124,8 @@ public class CartService {
         return cartMapper.toDTO(updatedCart);
     }
 
-    public void clearCart(Long userId) {
-        Cart cart = getCartEntity(userId);
+    public void clearCart() {
+        Cart cart = getCartEntity();
         cart.getItems().clear(); // orphanRemoval deletes them all from DB
         cart.setTotalPrice(BigDecimal.ZERO);
         cartRepository.save(cart);
@@ -145,8 +143,9 @@ public class CartService {
         cart.setTotalPrice(total);
     }
 
-    public Cart getCartEntity(Long userId) {
-        return cartRepository.findByUserId(userId)
-                .orElseGet(() -> createCartForUser(userId));
+    public Cart getCartEntity() {
+        User user = authService.getCurrentUser();
+        return cartRepository.findByUser(user)
+                .orElseGet(() -> createCartForUser(user));
     }
 }

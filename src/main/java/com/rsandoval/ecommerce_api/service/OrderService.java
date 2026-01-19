@@ -28,8 +28,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponse placeOrder(String shippingAddress){
-        Long userId = authService.getCurrentUser().getId();
-        Cart cart = cartService.getCartEntity(userId);
+        Cart cart = cartService.getCartEntity();
         if (cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot place order with empty cart");
         }
@@ -67,7 +66,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // 4. Clear Cart
-        cartService.clearCart(userId);
+        cartService.clearCart();
 
         return orderMapper.toDTO(savedOrder);
     }

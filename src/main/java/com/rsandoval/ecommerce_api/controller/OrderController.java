@@ -22,9 +22,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/place")
-    public ResponseEntity<OrderResponse> placeOrder(
-            @RequestBody PlaceOrderRequest request
-            ) {
+    public ResponseEntity<OrderResponse> placeOrder( @RequestBody PlaceOrderRequest request) {
         OrderResponse placedOrder = orderService.placeOrder(request.shippingAddress());
         return ResponseEntity
                 .created(URI.create("/api/orders/" + placedOrder.getId()))

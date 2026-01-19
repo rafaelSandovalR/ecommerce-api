@@ -21,20 +21,19 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/{userId}/place")
+    @PostMapping("/place")
     public ResponseEntity<OrderResponse> placeOrder(
-            @PathVariable Long userId,
             @RequestBody PlaceOrderRequest request
             ) {
-        OrderResponse placedOrder = orderService.placeOrder(userId, request.shippingAddress());
+        OrderResponse placedOrder = orderService.placeOrder(request.shippingAddress());
         return ResponseEntity
                 .created(URI.create("/api/orders/" + placedOrder.getId()))
                 .body(placedOrder);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping
     public ResponseEntity<Page<OrderResponse>> getUserOrders(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable
             ) {
         return ResponseEntity.ok(orderService.getUserOrders(pageable));
     }

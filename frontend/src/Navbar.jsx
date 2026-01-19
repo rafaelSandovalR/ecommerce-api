@@ -21,6 +21,9 @@ export default function Navbar() {
                 <Link to="/cart" className="text-gray-600 hover:text-blue-600 font-medium transition">
                     Cart
                 </Link>
+                <Link to="/orders" className="text-gray-600 hover:text-blue-600 font-medium transition">
+                    Orders
+                </Link>
 
                 <button
                     onClick={handleLogout}

@@ -27,7 +27,8 @@ public class OrderService {
     private final AuthService authService;
 
     @Transactional
-    public OrderResponse placeOrder(Long userId, String shippingAddress){
+    public OrderResponse placeOrder(String shippingAddress){
+        Long userId = authService.getCurrentUser().getId();
         Cart cart = cartService.getCartEntity(userId);
         if (cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot place order with empty cart");

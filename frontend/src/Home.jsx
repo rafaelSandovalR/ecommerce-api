@@ -40,12 +40,6 @@ export default function Home() {
 
     try {
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
-
-      if (!userId) {
-        alert("User ID missing. Please log out and log in again.");
-        return;
-      }
 
       // Matches Backend CartRequest DTO
       const cartRequest = {
@@ -53,7 +47,7 @@ export default function Home() {
         quantity: 1
       }
 
-      const response = await fetch(`http://localhost:8080/api/carts/${userId}/add`, {
+      const response = await fetch(`http://localhost:8080/api/carts/add`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

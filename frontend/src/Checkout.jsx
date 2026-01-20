@@ -22,13 +22,8 @@ export default function Checkout() {
     const fetchCart = async () => {
         try {
             const token = localStorage.getItem("token");
-            const userId = localStorage.getItem("userId");
 
-            if (!userId) {
-                throw new Error("User ID not found");
-            }
-
-            const response = await fetch(`http://localhost:8080/api/carts/${userId}`, {
+            const response = await fetch(`http://localhost:8080/api/carts`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }

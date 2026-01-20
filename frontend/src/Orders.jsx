@@ -54,7 +54,7 @@ export default function Orders() {
                                 
                                 {/* Order Header */}
                                 <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
-                                    <div>
+                                    <div className="px-3">
                                         <span className="text-sm text-gray-500 block">Order #{order.id}</span>
                                         <span className="text-sm font-bold text-gray-700">
                                             {new Date(order.orderDate).toLocaleDateString()}
@@ -66,14 +66,14 @@ export default function Orders() {
                                         }`}>
                                             {order.status}
                                         </span>
-                                        <span className="block font-bold text-gray-800 mt-1">${order.totalPrice}</span>
+                                        <span className="px-3 block font-bold text-gray-800 mt-1">${order.totalPrice}</span>
                                     </div>   
                                 </div>
 
                                 {/* Order Item */}
                                 <div className="p-4">
-                                    <h4 className="text-sm font-bold text-gray-500 mb-2">Items</h4>
-                                    <ul className="space-y-2">
+                                    <h4 className="px-3 text-sm font-bold text-gray-500 mb-2">Items</h4>
+                                    <ul className="space-y-2 px-3">
                                         {order.items.map((item, index) => (
                                             <li key={index} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
                                                 <span>{item.productName} <span className="text-gray-400">x {item.quantity}</span></span>
@@ -83,7 +83,7 @@ export default function Orders() {
                                     </ul>
 
                                     {/* Shipping Address Display */}
-                                    <div className="mt-4 pt-4 border-t text-sm text-gray-500">
+                                    <div className="px-3 mt-4 pt-4 border-t text-sm text-gray-500">
                                         <span className="font-bold">Shipped to: </span> {order.shippingAddress}
                                     </div>
 

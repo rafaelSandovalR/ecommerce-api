@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCartAPI } from "./services/cartService";
-import Navbar from "./Navbar";
+import { fetchCartAPI } from "../services/cartService";
+import Navbar from "../components/Navbar";
 
 export default function Checkout() {
     const [cart, setCart] = useState(null);

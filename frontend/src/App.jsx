@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Home from "./Home"
-import ProtectedRoute from "./ProtectedRoute";
-import Cart from "./Cart";
-import Checkout from "./Checkout";
-import OrderSuccess from "./OrderSuccess";
-import Orders from "./Orders";
+import Login from "./pages/Login";
+import Home from "./pages/Home"
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
+import OrderSuccess from "./pages/OrderSuccess";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 export default function App() {
   return (

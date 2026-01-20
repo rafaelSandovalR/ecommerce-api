@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
-import { addToCartAPI } from "./services/cartService";
+import Navbar from "../components/Navbar";
+import { addToCartAPI } from "../services/cartService";
 
 export default function Home() {
   const [products, setProducts] = useState([]); // Holds the list of products

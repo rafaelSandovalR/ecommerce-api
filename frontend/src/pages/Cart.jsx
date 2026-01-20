@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // For the "Continue Shopping" link
-import { fetchCartAPI, removeFromCartAPI } from "./services/cartService";
-import Navbar from "./Navbar";
+import { fetchCartAPI, removeFromCartAPI } from "../services/cartService";
+import Navbar from "../components/Navbar";
 
 export default function Cart() {
     const [cart, setCart] = useState(null); // Holds the entire Cart Object

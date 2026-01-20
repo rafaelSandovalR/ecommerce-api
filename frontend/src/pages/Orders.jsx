@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchOrdersAPI } from "../services/orderService";
 import Navbar from "../components/Navbar";
 
 export default function Orders() {
@@ -7,24 +8,13 @@ export default function Orders() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchOrders();
+        handleFetchOrders();
     }, []);
 
-    const fetchOrders = async () => {
+    const handleFetchOrders = async () => {
 
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/orders`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch orders");
-
-            const data = await response.json();
-            console.log(data);
+            const data = await fetchOrdersAPI();
             setOrders(data.content || []);
         } catch (err) {
             setError(err.message);

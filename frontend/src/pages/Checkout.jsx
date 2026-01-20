@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCartAPI } from "../services/cartService";
+import { placeOrderAPI } from "../services/orderService";
 import Navbar from "../components/Navbar";
 
 export default function Checkout() {
@@ -38,20 +39,7 @@ export default function Checkout() {
         try {
             const token = localStorage.getItem("token");
             const fullAddress = `${address}, ${city}, ${zip}`
-
-            const response = await fetch(`http://localhost:8080/api/orders/place`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    shippingAddress: fullAddress
-                })
-            });
-
-            if (!response.ok) throw new Error("Failed to place order");
-
+            await 
             navigate("/order-success");
         } catch (err) {
             alert("Order failed: " + err.message);

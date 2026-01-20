@@ -18,9 +18,7 @@ export const fetchCartAPI = async () => {
     const token = getToken();
 
     const response = await fetch(API_URL, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
+        headers: { "Authorization": `Bearer ${token}` }
     });
 
     if (!response.ok) throw new Error("Failed to fetch cart");

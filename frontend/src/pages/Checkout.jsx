@@ -37,9 +37,8 @@ export default function Checkout() {
         setIsOrdering(true);
 
         try {
-            const token = localStorage.getItem("token");
             const fullAddress = `${address}, ${city}, ${zip}`
-            await 
+            await placeOrderAPI(fullAddress);
             navigate("/order-success");
         } catch (err) {
             alert("Order failed: " + err.message);

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import { addToCartAPI } from "../services/cartService";
+import { fetchAllProductsAPI } from "../services/productService";
+import Navbar from "../components/Navbar";
+
 
 export default function Home() {
   const [products, setProducts] = useState([]); // Holds the list of products
@@ -10,35 +12,25 @@ export default function Home() {
 
   // The "Effect" Hook: Runs once when the page loads
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8080/api/products", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-        // Handle Spring Page vs List
-        setProducts(data.content || data || []); // Save the data to our state
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false); // Stop the loading circle
-      }
-    };
-
-    fetchProducts();
+    handleFetchAllProducts();
   }, []); // The empty [] means: "Only run this ONE time on startup"
 
+
+  const handleFetchAllProducts = async () => {
+    try {
+      const data = await fetchAllProductsAPI();
+      // Handle Spring Page vs List
+      setProducts(data.content || data || []); // Save the data to our state
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false); // Stop the loading circle
+    }
+  };
+
+  
   const handleAddToCart = async (productId) => {
     setAddingId(productId); // Show loading state on the specific button
-
     try {
       await addToCartAPI(productId, 1);
       alert("Item added to cart!");

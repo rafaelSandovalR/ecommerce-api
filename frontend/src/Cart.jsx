@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // For the "Continue Shopping" link
+import { fetchCartAPI, removeFromCartAPI } from "./services/cartService";
 import Navbar from "./Navbar";
 
 export default function Cart() {
@@ -13,17 +14,7 @@ export default function Cart() {
 
     const fetchCart = async () => {
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/carts`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch cart");
-
-            const data = await response.json();
+            const data = await fetchCartAPI();
             setCart(data);
         } catch (err) {
             setError(err.message);
@@ -32,21 +23,11 @@ export default function Cart() {
         }
     };
 
-    const removeItem = async (itemId) => {
+    const handleRemoveItem = async (itemId) => {
         if (!confirm("Are you sure you want to remove this item?")) return;
 
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/carts/remove/${itemId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) throw new Error("Failed to remove item");
-
+            await removeFromCartAPI(itemId);
             // Refresh the cart UI
             fetchCart();
 
@@ -112,7 +93,7 @@ export default function Cart() {
                             {/* Actions */}
                             <div className="col-span-2 text-right">
                                 <button
-                                    onClick={() => removeItem(item.id)}
+                                    onClick={() => handleRemoveItem(item.id)}
                                     className="text-red-500 hover:text-red-700 text-sm font-medium"
                                 >
                                     Remove

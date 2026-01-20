@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchCartAPI } from "./services/cartService";
 import Navbar from "./Navbar";
 
 export default function Checkout() {
@@ -21,17 +22,7 @@ export default function Checkout() {
     
     const fetchCart = async () => {
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/carts`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) throw new Error("Failed to fetch cart");
-
-            const data = await response.json();
+            const data = await fetchCartAPI();
             setCart(data);
         } catch (err) {
             setError(err.message);

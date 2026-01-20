@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
+import { addToCartAPI } from "./services/cartService";
 
 export default function Home() {
   const [products, setProducts] = useState([]); // Holds the list of products
@@ -35,31 +36,11 @@ export default function Home() {
     fetchProducts();
   }, []); // The empty [] means: "Only run this ONE time on startup"
 
-  const addToCart = async (productId) => {
+  const handleAddToCart = async (productId) => {
     setAddingId(productId); // Show loading state on the specific button
 
     try {
-      const token = localStorage.getItem("token");
-
-      // Matches Backend CartRequest DTO
-      const cartRequest = {
-        productId: productId,
-        quantity: 1
-      }
-
-      const response = await fetch(`http://localhost:8080/api/carts/add`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json" // CRUCIAL: Tells Java this is a DTO
-        },
-        body: JSON.stringify(cartRequest) 
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add item");
-      }
-
+      await addToCartAPI(productId, 1);
       alert("Item added to cart!");
     } catch (err) {
       console.error(err);
@@ -98,7 +79,7 @@ export default function Home() {
                 <div className="mt-4 flex justify-between items-center">
                   <span className="text-blue-600 font-bold text-lg">${product.price}</span>
                   <button 
-                    onClick={() => addToCart(product.id)}
+                    onClick={() => handleAddToCart(product.id)}
                     disabled={addingId === product.id} // Disable if currently adding this
                     className={`px-4 py-2 rounded-md transition text-white ${
                       addingId === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"

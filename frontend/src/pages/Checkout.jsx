@@ -18,10 +18,10 @@ export default function Checkout() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchCart();
+        handleFetchCart();
     }, []);
     
-    const fetchCart = async () => {
+    const handleFetchCart = async () => {
         try {
             const data = await fetchCartAPI();
             setCart(data);

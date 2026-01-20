@@ -9,10 +9,10 @@ export default function Cart() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchCart();
+        handleFetchCart();
     }, []);
 
-    const fetchCart = async () => {
+    const handleFetchCart = async () => {
         try {
             const data = await fetchCartAPI();
             setCart(data);
@@ -29,7 +29,7 @@ export default function Cart() {
         try {
             await removeFromCartAPI(itemId);
             // Refresh the cart UI
-            fetchCart();
+            handleFetchCart();
 
         } catch (err) {
             alert(err.message);

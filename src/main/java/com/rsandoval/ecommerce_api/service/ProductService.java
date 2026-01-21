@@ -24,12 +24,11 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    public Page<ProductResponse> searchProducts(String query, Pageable pageable) {
-        return productRepository.findByNameContainingIgnoreCase(query, pageable)
-                .map(productMapper::toDTO);
-    }
-
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+    public Page<ProductResponse> getAllProducts(Pageable pageable, String query) {
+        if (query != null && !query.trim().isEmpty()) {
+            return productRepository.findByNameContainingIgnoreCase(query, pageable)
+                    .map(productMapper::toDTO);
+        }
         return productRepository.findAll(pageable)
                 .map(productMapper::toDTO);
     }

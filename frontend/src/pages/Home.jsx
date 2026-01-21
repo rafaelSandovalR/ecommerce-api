@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { addToCartAPI } from "../services/cartService";
 import { fetchAllProductsAPI } from "../services/productService";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 
@@ -8,17 +9,20 @@ export default function Home() {
   const [products, setProducts] = useState([]); // Holds the list of products
   const [loading, setLoading] = useState(true); // Tracks if we are still waiting
   const [error, setError] = useState(null);
-  const [addingId, setAddingId] = useState(null); 
+  const [addingId, setAddingId] = useState(null);
+  const [searchParams] = useSearchParams(); // Get the search params from the URL
+  const searchQuery = searchParams.get("q") || ""; // Get '?q=...' or empty string
 
   // The "Effect" Hook: Runs once when the page loads
   useEffect(() => {
     handleFetchAllProducts();
-  }, []); // The empty [] means: "Only run this ONE time on startup"
+  }, [searchQuery]); // Whenever the URL changes, run this function again
 
 
   const handleFetchAllProducts = async () => {
+    setLoading(true);
     try {
-      const data = await fetchAllProductsAPI();
+      const data = await fetchAllProductsAPI(searchQuery);
       // Handle Spring Page vs List
       setProducts(data.content || data || []); // Save the data to our state
     } catch (err) {

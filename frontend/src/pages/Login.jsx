@@ -1,37 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { loginAPI } from "../services/authService";
+import { Link } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [error, setError] = useState(null);
+    const { login } = useAuth();
 
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(""); // Clear previous errors
+        setError(null); // Clear previous errors
 
         try {
-            const response = await fetch("http://localhost:8080/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Login failed");
-            }
-
-            const data = await response.json();
-
-            localStorage.setItem("token", data.token);
-            
+            const data = await loginAPI(email, password);
+            login(data.token);
             navigate("/"); // Redirect user to the Home page
 
         } catch (err) {
-            setError(err.message);
+            setError("Invalid email or password");
         }
     };
 
@@ -69,6 +60,9 @@ export default function Login() {
                     >
                         Sign In
                     </button>
+                    <p className="pt-4 mt-4 text-sm text-center">
+                        Don't have an account? <Link to="/register" className="text-blue-500">Sign up</Link>
+                    </p>
                 </form>
             </div>
         </div>

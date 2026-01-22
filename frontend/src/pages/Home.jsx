@@ -46,8 +46,6 @@ export default function Home() {
     }
   };
 
-
-  if (loading) return <div className="text-center mt-20">Loading products...</div>;
   if (error) return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
 
   return (
@@ -55,10 +53,11 @@ export default function Home() {
       <Navbar />
 
       <div className="max-w-6xl mx-auto p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Featured Products</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          {searchQuery ? `Results for "${searchQuery}"` : "Featured Products"}</h1>
         
         {/* The Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"}`}>
           
           {/* The Loop (.map) */}
           {products.map((product) => (
@@ -88,6 +87,11 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* "No Results" Message */}
+        {!loading && products.length == 0 && (
+          <p className="text-center text-gray-500 mt-10">No products found.</p>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home"
 import Cart from "./pages/Cart";
@@ -12,6 +13,7 @@ export default function App() {
   return (
     <Routes>
       {/* Unlocked */}
+      <Route path="/register" element={<Register />}/>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />}/>
 

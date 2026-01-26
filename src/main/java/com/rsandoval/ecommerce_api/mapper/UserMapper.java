@@ -20,7 +20,7 @@ public class UserMapper {
     public User toEntity(UserRequest request, String encodedPassword) {
         User user = new User();
         user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setEmail(request.getEmail().toLowerCase());
         user.setPassword(encodedPassword);
         user.setRole(Role.ROLE_USER);
         return user;

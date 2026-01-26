@@ -40,20 +40,16 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getEmail().toLowerCase(),
                         request.getPassword()
                 )
         );
-
         String token = jwtUtils.generateToken(authentication.getName());
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         return new AuthResponse(token);
     }
 
     public UserResponse register(UserRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail().toLowerCase())) {
             throw new IllegalArgumentException("Email already in use");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,21 +25,21 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    public Page<ProductResponse> getAllProducts(Pageable pageable, String query) {
-        if (query != null && !query.trim().isEmpty()) {
-            return productRepository.findByNameContainingIgnoreCase(query, pageable)
-                    .map(productMapper::toDTO);
-        }
-        return productRepository.findAll(pageable)
-                .map(productMapper::toDTO);
-    }
+    public Page<ProductResponse> getAllProducts(
+            String keyword,
+            Long categoryId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Pageable pageable) {
 
-    public Page<ProductResponse> getProductsByCategory(Long categoryId, Pageable pageable) {
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new ResourceNotFoundException("Category not found");
-        }
-        return productRepository.findByCategoryId(categoryId, pageable)
-                .map(productMapper::toDTO);
+        Page<Product> products = productRepository.searchProducts(
+                keyword,
+                categoryId,
+                minPrice,
+                maxPrice,
+                pageable
+        );
+        return products.map(productMapper::toDTO);
     }
 
     public ProductResponse getProductById(Long productId) {

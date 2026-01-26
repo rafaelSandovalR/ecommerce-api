@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { addToCartAPI } from "../services/cartService";
 import { fetchAllProductsAPI } from "../services/productService";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 
 
@@ -12,6 +13,8 @@ export default function Home() {
   const [addingId, setAddingId] = useState(null);
   const [searchParams] = useSearchParams(); // Get the search params from the URL
   const searchQuery = searchParams.get("q") || ""; // Get '?q=...' or empty string
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // The "Effect" Hook: Runs once when the page loads
   useEffect(() => {
@@ -34,6 +37,12 @@ export default function Home() {
 
   
   const handleAddToCart = async (productId) => {
+    if (!user) {
+      alert("Please login to add items to your cart.");
+      navigate("/login");
+      return;
+    }
+    
     setAddingId(productId); // Show loading state on the specific button
     try {
       await addToCartAPI(productId, 1);

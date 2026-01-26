@@ -22,8 +22,6 @@ public class Product {
     @NotBlank(message = "Product name is required")
     private String name;
 
-    private String description;
-
     @Column(nullable = false)
     @NotNull(message = "Price is required") // Only checks for null
     @Positive(message = "Price must be greater than zero") // Checks logic
@@ -36,4 +34,7 @@ public class Product {
     @ManyToOne // TODO: Consider switching to FetchType.LAZY if Category object becomes bloated
     @JoinColumn(name = "category_id", nullable = false) // Creates FK column in the DB
     private Category category;
+
+    private String description;
+    private String imageUrl;
 }

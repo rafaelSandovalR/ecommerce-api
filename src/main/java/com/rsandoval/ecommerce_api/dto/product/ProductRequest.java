@@ -14,8 +14,6 @@ public class ProductRequest {
     @NotBlank(message = "Product name is required")
     private String name;
 
-    private String description;
-
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be greater than zero")
     private BigDecimal price;
@@ -25,4 +23,7 @@ public class ProductRequest {
 
     @NotNull(message = "Category ID is required")
     private Long categoryId; // Here we ask for the ID directly, instead of the object.
+
+    private String description;
+    private String imageUrl;
 }

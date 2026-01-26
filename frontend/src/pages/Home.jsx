@@ -35,14 +35,14 @@ export default function Home() {
     }
   };
 
-  
+
   const handleAddToCart = async (productId) => {
     if (!user) {
       alert("Please login to add items to your cart.");
       navigate("/login");
       return;
     }
-    
+
     setAddingId(productId); // Show loading state on the specific button
     try {
       await addToCartAPI(productId, 1);
@@ -64,17 +64,27 @@ export default function Home() {
       <div className="max-w-6xl mx-auto p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
           {searchQuery ? `Results for "${searchQuery}"` : "Featured Products"}</h1>
-        
+
         {/* The Grid Layout */}
         <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"}`}>
-          
+
           {/* The Loop (.map) */}
           {products.map((product) => (
             <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              
+
               {/* Product Image (Placeholder for now) */}
-              <div className="h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                 [Image Placeholder]
+              <div className="h-48 bg-gray-200 overflow-hidden group">
+                {product.imageUrl ? (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    No Image
+                  </div>
+                )}
               </div>
 
               <div className="p-4">
@@ -82,12 +92,11 @@ export default function Home() {
                 <p className="text-gray-600 mt-2 text-sm">{product.description}</p>
                 <div className="mt-4 flex justify-between items-center">
                   <span className="text-blue-600 font-bold text-lg">${product.price}</span>
-                  <button 
+                  <button
                     onClick={() => handleAddToCart(product.id)}
                     disabled={addingId === product.id} // Disable if currently adding this
-                    className={`px-4 py-2 rounded-md transition text-white ${
-                      addingId === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                    }`}
+                    className={`px-4 py-2 rounded-md transition text-white ${addingId === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                      }`}
                   >
                     {addingId === product.id ? "Adding..." : "Add to Cart"}
                   </button>

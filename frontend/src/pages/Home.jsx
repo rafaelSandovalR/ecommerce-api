@@ -37,10 +37,14 @@ export default function Home() {
     loadCategories();
   }, []);
 
-  // Fetch Products whenever filters change
+  
   useEffect(() => {
-    loadProducts();
-  }, [searchQuery, selectedCategory, minPrice, maxPrice]); // Whenever the URL changes, run this function again
+    const timer = setTimeout(() => {
+      loadProducts();
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory, minPrice, maxPrice]);
 
 
   const loadProducts = async () => {

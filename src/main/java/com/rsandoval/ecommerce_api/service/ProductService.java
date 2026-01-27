@@ -32,8 +32,12 @@ public class ProductService {
             BigDecimal maxPrice,
             Pageable pageable) {
 
+        String searchPattern = null;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            searchPattern = "%" + keyword.toLowerCase() + "%";
+        }
         Page<Product> products = productRepository.searchProducts(
-                keyword,
+                searchPattern,
                 categoryId,
                 minPrice,
                 maxPrice,

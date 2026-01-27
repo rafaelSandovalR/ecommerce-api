@@ -1,10 +1,18 @@
 import { apiRequest } from "./api";
 
-export const fetchAllProductsAPI = async (query = "") => {
+export const fetchAllProductsAPI = async ({ keyword, categoryId, minPrice, maxPrice } = {}) => {
 
-    const endpoint = query
-        ? `/products?query=${encodeURIComponent(query)}`
-        : "/products";
+    // Create a URLSearchParams object to build the query string automatically
+    const params = new URLSearchParams();
 
-    return await apiRequest(endpoint);
+    if (keyword) params.append("keyword", keyword);
+    if (categoryId) params.append("categoryId", categoryId);
+    if (minPrice) params.append("minPrice", minPrice);
+    if (maxPrice) params.append("maxPrice", maxPrice);
+
+    return await apiRequest(`/products?${params.toString()}`);
+};
+
+export const fetchCategoriesAPI = async () => {
+    return await apiRequest("/categories");
 };

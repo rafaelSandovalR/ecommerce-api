@@ -39,9 +39,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Look for our WebConfig file
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Allow guests to view products
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll() // Allow anyone ot register/login
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Allow anyone to view products
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll() // Allow anyone to view categories
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin only endpoints
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

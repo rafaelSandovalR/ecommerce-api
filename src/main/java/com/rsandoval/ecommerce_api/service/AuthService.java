@@ -44,7 +44,8 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        String token = jwtUtils.generateToken(authentication.getName());
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String token = jwtUtils.generateToken(authentication.getName(), role);
         return new AuthResponse(token);
     }
 

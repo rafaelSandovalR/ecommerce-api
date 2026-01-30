@@ -14,6 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // Master Search Query: Checks if filter is NULL. If so, it ignores the filter
     @Query("SELECT p FROM Product p WHERE " +
+            "p.isDeleted = false AND " +
             "(:keyword IS NULL OR LOWER(p.name) LIKE :keyword) AND " +
             "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
             "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
@@ -25,6 +26,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("maxPrice")BigDecimal maxPrice,
             Pageable pageable
     );
+
+    Page<Product> findByIsDeletedTrue(Pageable pageable);
 
     boolean existsByName(String name);
 }

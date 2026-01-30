@@ -16,3 +16,7 @@ export const fetchAllProductsAPI = async ({ keyword, categoryId, minPrice, maxPr
 export const fetchCategoriesAPI = async () => {
     return await apiRequest("/categories");
 };
+
+export const deleteProductAPI = async (id) => {
+    return await apiRequest(`/products/${id}`, { method: "DELETE" });
+};

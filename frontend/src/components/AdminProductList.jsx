@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAllProductsAPI } from "../services/productService";
+import { deleteProductAPI, fetchAllProductsAPI } from "../services/productService";
 
 export default function AdminProductList() {
     const [products, setProducts] = useState([]);
@@ -16,6 +16,20 @@ export default function AdminProductList() {
         } catch (err) {
             console.error("Failed to load products", err);
         }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+        try {
+            await deleteProductAPI(id);
+
+            setProducts(products.filter(p => p.id !== id));
+            alert("Product deleted!");
+        } catch (err) {
+            alert("Error deleting product: " + err.message);
+        }
+
     };
 
     return (
@@ -51,7 +65,12 @@ export default function AdminProductList() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button className="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button>
-                                <button className="text-red-600 hover:text-red-900">Delete</button>
+                                <button 
+                                    onClick={() => handleDelete(product.id)}
+                                    className="text-red-600 hover:text-red-900"
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     ))}

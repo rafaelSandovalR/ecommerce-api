@@ -18,13 +18,15 @@ export const apiRequest = async (endpoint, options = {}) => {
     if (response.status === 401 || response.status === 403) {
         localStorage.removeItem("token");
         window.location.href = "/login";
-        return;
+        throw new Error("Session expired or unauthorized");
     }
     
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({}));
         throw new Error(errorBody.message || "API Request Failed");
     }
+
+    if (response.status === 204) return null;
 
     return await response.json();
 };

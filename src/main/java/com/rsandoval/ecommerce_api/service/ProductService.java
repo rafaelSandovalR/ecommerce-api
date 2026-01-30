@@ -77,11 +77,11 @@ public class ProductService {
     }
 
     public void deleteProduct(Long productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException("Product not found with ID: " + productId);
-        }
+        Product product = productRepository.findById(productId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
 
-        productRepository.deleteById(productId);
+        product.setDeleted(true); // Soft delete
+        productRepository.save(product);
     }
 
     private Category getCategoryEntity(Long categoryId) {

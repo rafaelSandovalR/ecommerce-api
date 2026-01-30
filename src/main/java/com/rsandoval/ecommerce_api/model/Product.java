@@ -37,4 +37,7 @@ public class Product {
 
     private String description;
     private String imageUrl;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 }

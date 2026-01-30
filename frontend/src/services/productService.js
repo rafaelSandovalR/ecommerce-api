@@ -20,3 +20,10 @@ export const fetchCategoriesAPI = async () => {
 export const deleteProductAPI = async (id) => {
     return await apiRequest(`/products/${id}`, { method: "DELETE" });
 };
+
+export const addProductAPI = async (productData) => {
+    return await apiRequest("/products", {
+        method: "POST",
+        body: JSON.stringify(productData),
+    });
+};

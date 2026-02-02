@@ -27,3 +27,10 @@ export const addProductAPI = async (productData) => {
         body: JSON.stringify(productData),
     });
 };
+
+export const updateProductAPI = async (id, productData) => {
+    return await apiRequest(`/products/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(productData),
+    });
+};

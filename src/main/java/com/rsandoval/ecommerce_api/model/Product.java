@@ -35,6 +35,7 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false) // Creates FK column in the DB
     private Category category;
 
+    @Column(length = 1000)
     private String description;
     private String imageUrl;
 

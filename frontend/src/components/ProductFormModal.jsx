@@ -22,11 +22,11 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                 description: initialData.description || "",
                 price: initialData.price,
                 stockQuantity: initialData.stockQuantity,
-                categoryId: initialData.categoryId, // TODO: Or initialData.category?.id
+                categoryId: initialData.categoryId,
                 imageUrl: initialData.imageUrl || ""
             });
         }
-    }, []);
+    }, [initialData]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

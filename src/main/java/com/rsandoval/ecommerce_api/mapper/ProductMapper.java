@@ -20,6 +20,7 @@ public class ProductMapper {
 
         if (product.getCategory() != null) {
             dto.setCategoryName(product.getCategory().getName());
+            dto.setCategoryId(product.getCategory().getId());
         }
 
         return dto;

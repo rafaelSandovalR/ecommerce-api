@@ -11,6 +11,7 @@ public class ProductResponse {
     private String description;
     private BigDecimal price;
     private Integer stockQuantity;
-    private String categoryName; // Flattened data, easier for frontend
+    private String categoryName;
+    private Long categoryId;
     private String imageUrl;
 }

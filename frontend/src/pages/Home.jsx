@@ -178,8 +178,8 @@ export default function Home() {
                   </div>
 
                   <div className="p-4">
-                    <h2 className="text-xl font-bold text-gray-800">{product.name}</h2>
-                    <p className="text-gray-600 mt-2 text-sm">{product.description}</p>
+                    <h2 className="text-xl font-bold text-gray-800 line-clamp-1">{product.name}</h2>
+                    <p className="text-gray-600 mt-2 text-sm line-clamp-2 h-[40px]">{product.description}</p>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-blue-600 font-bold text-lg">${product.price}</span>
                       <button

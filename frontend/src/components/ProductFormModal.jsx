@@ -35,6 +35,16 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (parseInt(formData.stockQuantity) < 0) {
+            alert("Stock cannot be negative.");
+            return;
+        }
+
+        if (parseFloat(formData.price) <= 0) {
+            alert("Price must be greater than zero.");
+            return;            
+        }
+
         const payload = {
             ...formData,
             price: parseFloat(formData.price),
@@ -68,11 +78,28 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                     <div className="flex gap-2">
                         <div className="w-1/2">
                             <label className="block text-sm font-medium text-gray-700">Price ($)</label>
-                            <input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} className="w-full border p-2 rounded" required/>
+                            <input 
+                                name="price" 
+                                type="number" 
+                                step="0.01"
+                                min="0"
+                                value={formData.price} 
+                                onChange={handleChange} 
+                                className="w-full border p-2 rounded" 
+                                required
+                            />
                         </div>
                         <div className="w-1/2">
                             <label className="block text-sm font-medium text-gray-700">Stock</label>
-                            <input name="stockQuantity" type="number" value={formData.stockQuantity} onChange={handleChange} className="w-full border p-2 rounded" required/>
+                            <input 
+                                name="stockQuantity" 
+                                type="number"
+                                min="0"
+                                value={formData.stockQuantity} 
+                                onChange={handleChange} 
+                                className="w-full border p-2 rounded" 
+                                required
+                            />
                         </div>                        
                     </div>
 

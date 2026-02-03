@@ -7,6 +7,7 @@ export default function Navbar() {
     const [searchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
     const { user, logout } = useAuth(); // Get user and logout functions from Global State
+    const isAdmin = user?.role === "ROLE_ADMIN"
 
     // Sync input with URL: If user clicks "Back", update the input box
     useEffect(() => {
@@ -55,6 +56,13 @@ export default function Navbar() {
 
             {/* Links & Logout */}
             <div className="flex items-center space-x-6">
+
+                {isAdmin && (
+                    <Link to="/admin" className="text-red-600 font-bold hover:text-red-800">
+                        Admin Panel
+                    </Link>
+                )}
+                
                 <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium transition">
                     Home
                 </Link>

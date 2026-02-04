@@ -67,6 +67,7 @@ public class ProductService {
         productToUpdate.setDescription(request.getDescription());
         productToUpdate.setPrice(request.getPrice());
         productToUpdate.setStockQuantity(request.getStockQuantity());
+        productToUpdate.setImageUrl(request.getImageUrl());
 
         // TODO: Might want to restrict this ability in production
         Category newCategory = getCategoryEntity(request.getCategoryId());

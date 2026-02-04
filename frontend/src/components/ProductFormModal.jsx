@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { fetchCategoriesAPI } from "../services/productService";
+import { uploadFileAPI } from "../services/fileUploadService";
 
 export default function ProductFormModal({ onClose, onSubmit, initialData }) {
     const [categories, setCategories] = useState([]);
+    const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -11,8 +13,6 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
         categoryId: "",
         imageUrl: ""
     });
-
-
 
     useEffect(() => {
         fetchCategoriesAPI().then(setCategories);
@@ -27,6 +27,21 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
             });
         }
     }, [initialData]);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const secureUrl = await uploadFileAPI(file);    // Send file to backend -> Cloudinary
+            setFormData(prev => ({ ...prev, imageUrl: secureUrl})); // Put the returned URL into the form data
+        } catch (error) {
+            alert("Failed to upload image: " + error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -114,10 +129,31 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                         </select>
                     </div>
 
-                    {/* Image URL */}
+                    {/* Image Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                        <input name="imageUrl" placeholder="http://..." value={formData.imageUrl} onChange={handleChange} className="w-full border p-2 rounded"/>
+                        <label className="block text-sm font-medium text-gray-700">Product Image</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="w-full border p-2 rounded"
+                            />
+                            {/* Loading Indicator */}
+                            {uploading && <span className="text-blue-600 text-sm">Uploading...</span>}
+                        </div>
+                        {formData.imageUrl && (
+                            <div className="mt-2">
+                                <p className="text-xs text-gray-500 mb-1">Preview:</p>
+                                <img
+                                    src={formData.imageUrl}
+                                    alt="Preview"
+                                    className="w-20 h-20 object-cover rounded border"
+                                />
+                                {/* Hidden input to store the actual string URL for submission */}
+                                <input type="hidden" name="imageUrl" value={formData.imageUrl} />
+                            </div>
+                        )}
                     </div>
 
                     {/* Buttons */}

@@ -8,6 +8,11 @@ export const apiRequest = async (endpoint, options = {}) => {
         ...options.headers, // Allow overriding headers if needed
     };
 
+    // If sending a file (FormData), let the browser set the Content-Type
+    if (options.body instanceof FormData) {
+        delete headers["Content-Type"];
+    }
+
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const response = await fetch(`${BASE_URL}${endpoint}`, {

@@ -12,6 +12,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true); // Tracks if we are still waiting
   const [error, setError] = useState(null);
   const [addingId, setAddingId] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   // URL Params
   const [searchParams] = useSearchParams(); // Get the search params from the URL
@@ -44,7 +46,7 @@ export default function Home() {
     }, 700);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedCategory, minPrice, maxPrice]);
+  }, [page, searchQuery, selectedCategory, minPrice, maxPrice]);
 
 
   const loadProducts = async () => {
@@ -54,10 +56,13 @@ export default function Home() {
         keyword: searchQuery,
         categoryId: selectedCategory,
         minPrice: minPrice,
-        maxPrice: maxPrice
+        maxPrice: maxPrice,
+        page: page,
+        size: 12
       });
       // Handle Spring Page vs List
       setProducts(data.content || data || []); // Save the data to our state
+      setTotalPages(data.totalPages || 0);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -181,7 +186,7 @@ export default function Home() {
                     <h2 className="text-xl font-bold text-gray-800 line-clamp-1">{product.name}</h2>
                     <p className="text-gray-600 mt-2 text-sm line-clamp-2 h-[40px]">{product.description}</p>
                     <div className="mt-4 flex justify-between items-center">
-                      <span className="text-blue-600 font-bold text-lg">${product.price}</span>
+                      <span className="text-blue-600 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
                       <button
                         onClick={() => handleAddToCart(product.id)}
                         disabled={addingId === product.id} // Disable if currently adding this
@@ -195,6 +200,27 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {!loading && totalPages > 0 && (
+              <div className="flex justify-center mt-8 gap-4">
+                <button
+                  disabled={page === 0}
+                  onClick={() => setPage(p => p - 1)}
+                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="py-2">Page {page + 1} of {totalPages}</span>
+                <button
+                  disabled={page + 1 >= totalPages}
+                  onClick={() => setPage(p => p + 1)}
+                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
 
             {/* "No Results" Message */}
             {!loading && products.length == 0 && (

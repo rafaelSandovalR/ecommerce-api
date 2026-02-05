@@ -1,10 +1,12 @@
 import { apiRequest } from "./api";
 
-export const fetchAllProductsAPI = async ({ keyword, categoryId, minPrice, maxPrice } = {}) => {
+export const fetchAllProductsAPI = async ({ page = 0, size = 10, keyword, categoryId, minPrice, maxPrice } = {}) => {
 
     // Create a URLSearchParams object to build the query string automatically
     const params = new URLSearchParams();
 
+    params.append("page", page);
+    params.append("size", size);
     if (keyword) params.append("keyword", keyword);
     if (categoryId) params.append("categoryId", categoryId);
     if (minPrice) params.append("minPrice", minPrice);

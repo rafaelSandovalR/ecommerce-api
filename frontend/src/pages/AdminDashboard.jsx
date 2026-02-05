@@ -3,11 +3,13 @@ import AdminProductList from "../components/AdminProductList";
 import Navbar from "../components/Navbar";
 import { addProductAPI, updateProductAPI } from "../services/productService";
 import ProductFormModal from "../components/ProductFormModal";
+import AdminOrderList from "../components/AdminOrderList";
 
 export default function AdminDashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [activeTab, setActiveTab] = useState("products");
 
     const handleAddClick = () => {
         setEditingProduct(null); // Clear previous data
@@ -39,21 +41,58 @@ export default function AdminDashboard() {
         <div className="min-h-screen bg-gray-100">
             <Navbar />
             <div className="max-w-7xl mx-auto p-8">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">Product Manager</h1>
+
+                {/* Tab Navigation */}
+                <div>
                     <button
-                        onClick={handleAddClick}
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        onClick={() => setActiveTab("products")}
+                        className={`text-lg font-semibold px-4 py-2 rounded-t-lg transition-colors ${
+                            activeTab === "products"
+                            ? "bg-white text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
                     >
-                        + Add New Product
+                        Products
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("orders")}
+                        className={`text-lg font-semibold px-4 py-2 rounded-t-lg transition-colors ${
+                            activeTab === "orders"
+                            ? "bg-white text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                    >
+                        Orders
                     </button>
                 </div>
 
-                <AdminProductList 
-                    key={refreshKey}
-                    onEdit={handleEditClick}
-                />
+                {/* Dynamic Header */}
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        {activeTab === "products" ? "Product Manager" : "Order Manager"}
+                    </h1>
+                    {activeTab === "products" && (
+                        <button
+                            onClick={handleAddClick}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        >
+                            + Add New Product
+                        </button>
+                    )}
+                </div>
 
+                {/* Conditional Content Rendering */}
+
+                {activeTab === "products" ? (
+                    <AdminProductList 
+                        key={refreshKey}
+                        onEdit={handleEditClick}
+                    />
+                ) : (
+                    <AdminOrderList />
+                )}
+
+                {/* Product Modal (Only relevant for products tab) */}
                 {isModalOpen && (
                     <ProductFormModal
                         initialData={editingProduct}

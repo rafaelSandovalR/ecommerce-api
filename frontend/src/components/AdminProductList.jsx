@@ -89,7 +89,7 @@ export default function AdminProductList({ onEdit }) {
                     <button
                         disabled={page === 0}
                         onClick={() => setPage(p => p - 1)}
-                        className="px-3 py-1 bg-white border rounded text-sm disabled:opacity-50 hover:bg-gray-100"
+                        className="w-24 py-1 bg-white border rounded text-sm disabled:opacity-50 hover:bg-gray-100"
                     >
                         Previous
                     </button>
@@ -99,7 +99,7 @@ export default function AdminProductList({ onEdit }) {
                     <button
                         disabled={page + 1 >= totalPages}
                         onClick={() => setPage(p => p + 1)}
-                        className="px-3 py-1 bg-white border rounded text-sm disabled:opacity-50 hover:bg-gray-100"
+                        className="w-24 py-1 bg-white border rounded text-sm disabled:opacity-50 hover:bg-gray-100"
                     >
                         Next
                     </button>

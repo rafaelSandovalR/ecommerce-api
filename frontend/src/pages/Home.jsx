@@ -207,7 +207,7 @@ export default function Home() {
                 <button
                   disabled={page === 0}
                   onClick={() => setPage(p => p - 1)}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                  className="w-24 py-2 bg-gray-200 rounded disabled:opacity-50"
                 >
                   Previous
                 </button>
@@ -215,7 +215,7 @@ export default function Home() {
                 <button
                   disabled={page + 1 >= totalPages}
                   onClick={() => setPage(p => p + 1)}
-                  className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                  className="w-24 py-2 bg-gray-200 rounded disabled:opacity-50"
                 >
                   Next
                 </button>

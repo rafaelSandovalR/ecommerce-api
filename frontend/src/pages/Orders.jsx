@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchOrdersAPI } from "../services/orderService";
+import { getStatusColor } from "../utils/orderStatus";
 import Navbar from "../components/Navbar";
 
 export default function Orders() {
@@ -51,12 +52,10 @@ export default function Orders() {
                                         </span>
                                     </div>
                                     <div className="text-right">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                            order.status === "COMPLETED" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                                        }`}>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
                                             {order.status}
                                         </span>
-                                        <span className="px-3 block font-bold text-gray-800 mt-1">${order.totalPrice}</span>
+                                        <span className="px-3 block font-bold text-gray-800 mt-1">${Number(order.totalPrice).toFixed(2)}</span>
                                     </div>   
                                 </div>
 
@@ -67,7 +66,7 @@ export default function Orders() {
                                         {order.items.map((item, index) => (
                                             <li key={index} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
                                                 <span>{item.productName} <span className="text-gray-400">x {item.quantity}</span></span>
-                                                <span>${item.totalLinePrice}</span>
+                                                <span>${Number(item.totalLinePrice).toFixed(2)}</span>
                                             </li>
                                         ))}
                                     </ul>

@@ -36,7 +36,7 @@ public class OrderService {
         Order order = new Order();
         order.setUser(cart.getUser());
         order.setOrderDate(LocalDateTime.now());
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PAID);
         order.setTotalPrice(cart.getTotalPrice());
         order.setShippingAddress(shippingAddress);
 

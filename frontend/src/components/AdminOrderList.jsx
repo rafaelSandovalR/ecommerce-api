@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllOrdersAPI, updateOrderStatusAPI } from "../services/orderService";
+import { getStatusColor } from "../utils/orderStatus";
 
 export default function AdminOrderList() {
     const [orders, setOrders] = useState([]);
@@ -57,12 +58,7 @@ export default function AdminOrderList() {
                                     <td className="p-2 text-sm">{new Date(order.orderDate).toLocaleDateString()}</td>
                                     <td className="p-2 font-bold">${order.totalPrice.toFixed(2)}</td>
                                     <td className="p-2">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${
-                                            order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                            order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                                            order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                                            'bg-yellow-100 text-yellow-800' // Default to yellow for PENDING
-                                        }`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(order.status)}`}>
                                             {order.status}
                                         </span>
                                     </td>
@@ -73,6 +69,7 @@ export default function AdminOrderList() {
                                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                         >
                                             <option value="PENDING">Pending</option>
+                                            <option value="PAID">Paid</option>
                                             <option value="SHIPPED">Shipped</option>
                                             <option value="DELIVERED">Delivered</option>
                                             <option value="CANCELLED">Cancelled</option>

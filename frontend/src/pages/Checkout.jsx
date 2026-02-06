@@ -2,47 +2,55 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCartAPI } from "../services/cartService";
 import { placeOrderAPI } from "../services/orderService";
+import { createPaymentIntentAPI } from "../services/paymentService";
 import Navbar from "../components/Navbar";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import CheckoutForm from "../components/CheckoutForm";
+
+const stripePromise = loadStripe("pk_test_51SxWYs7nCDsNfVCbhsiTLt7T5BgynkGR0Ni7tZ8MQEBzga3wfyxe6WP2CUTdLTYRiy6R5mwLzg49NVg5ia9wZBXc00MAGHt79u");
 
 export default function Checkout() {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [clientSecret, setClientSecret] = useState("");
 
     // Form State
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [zip, setZip] = useState("");
-    const [isOrdering, setIsOrdering] = useState(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        handleFetchCart();
+        const initData = async () => {
+            try {
+                const cartData = await fetchCartAPI();
+                setCart(cartData);
+
+                if (cartData && cartData.items.length > 0) {
+                    const intentData = await createPaymentIntentAPI();
+                    setClientSecret(intentData.clientSecret);
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initData();
     }, []);
-    
-    const handleFetchCart = async () => {
-        try {
-            const data = await fetchCartAPI();
-            setCart(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    const handlePlaceOrder = async (e) => {
-        e.preventDefault();
-        setIsOrdering(true);
-
+    // Called ONLY after Stripe confims payment is successful
+    const handleOrderFinalization = async (paymentId) => {
         try {
             const fullAddress = `${address}, ${city}, ${zip}`
             await placeOrderAPI(fullAddress);
             navigate("/order-success");
         } catch (err) {
-            alert("Order failed: " + err.message);
-            setIsOrdering(false);
+            alert("Payment received, but order creation failed: " + err.message);
         }
     };
 
@@ -65,61 +73,57 @@ export default function Checkout() {
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <h2 className="text-xl font-bold mb-4">Shipping Information</h2>
 
-                        <form onSubmit={handlePlaceOrder} id="checkout-form">
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                            <input
+                                type="text"
+                                required
+                                className="w-full p-2 border rounded"
+                                placeholder="123 Main St"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
                                 <input
                                     type="text"
                                     required
                                     className="w-full p-2 border rounded"
-                                    placeholder="123 Main St"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="New York"
+                                    value={city}
+                                    onChange={(e) => setCity(e.target.value)}
                                 />
                             </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full p-2 border rounded"
+                                    placeholder="10001"
+                                    value={zip}
+                                    onChange={(e) => setZip(e.target.value)}
+                                />
+                            </div>
+                        </div>
 
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full p-2 border rounded"
-                                        placeholder="New York"
-                                        value={city}
-                                        onChange={(e) => setCity(e.target.value)}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full p-2 border rounded"
-                                        placeholder="10001"
-                                        value={zip}
-                                        onChange={(e) => setZip(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                        <h2 className="text-xl font-bold mb-4 mt-8">Payment Details</h2>
 
-                            <h2 className="text-xl font-bold mb-4 mt-8">Payment Details</h2>
-                            {/* Mock Payment Fields */}
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Card Number</label>
-                                <input type="text" className="w-full p-2 border rounded" placeholder="0000 0000 0000 0000"/>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Expiry</label>
-                                <input type="text" className="w-full p-2 border rounded" placeholder="MM/YY"/>                                    
-                                </div>
-                                <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">CVC</label>
-                                <input type="text" className="w-full p-2 border rounded" placeholder="123"/>                                    
-                                </div>
-                            </div>
-                        </form>
+                        {/* Stripe Form */}
+
+                        {clientSecret ? (
+                            <Elements stripe={stripePromise} options={{ clientSecret }}>
+                                <CheckoutForm
+                                    onSuccess={handleOrderFinalization}
+                                    address={address}
+                                />
+                            </Elements>
+                        ) : (
+                            <p>Loading secure payment...</p>
+                        )}
                     </div>
 
                     {/* Right Column: Order Summary */}
@@ -130,30 +134,18 @@ export default function Checkout() {
                             {cart.items.map(item => (
                                 <div key={item.id} className="flex justify-between text-sm">
                                     <span>{item.productName} (x{item.quantity})</span>
-                                    <span>${item.price * item.quantity}</span>
+                                    <span>${Number(item.price * item.quantity).toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
 
                         <div className="border-t pt-4 flex justify-between font-bold text-lg">
                             <span>Total</span>
-                            <span>${cart.totalPrice}</span>
+                            <span>${Number(cart.totalPrice).toFixed(2)}</span>
                         </div>
-
-                        <button
-                            type="submit"
-                            form="checkout-form"
-                            disabled={isOrdering}
-                            className={`w-full mt-6 py-3 rounded-lg font-bold text-white transition ${
-                                isOrdering ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-                            }`}
-                        >
-                            {isOrdering ? "Processing..." : "Place Order"}
-                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

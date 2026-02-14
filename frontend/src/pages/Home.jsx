@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { addToCartAPI } from "../services/cartService";
 import { fetchAllProductsAPI, fetchCategoriesAPI } from "../services/productService";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import Navbar from "../components/Navbar";
 
 
@@ -25,6 +25,7 @@ export default function Home() {
   const [maxPrice, setMaxPrice] = useState("");
 
   const { user } = useAuth();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function Home() {
 
     setAddingId(productId); // Show loading state on the specific button
     try {
-      await addToCartAPI(productId, 1);
+      await addToCart(productId, 1);
       alert("Item added to cart!");
     } catch (err) {
       console.error(err);

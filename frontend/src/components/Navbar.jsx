@@ -1,12 +1,14 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
     const { user, logout } = useAuth(); // Get user and logout functions from Global State
+    const { totalItems } = useCart();
     const isAdmin = user?.role === "ROLE_ADMIN"
 
     // Sync input with URL: If user clicks "Back", update the input box
@@ -70,8 +72,13 @@ export default function Navbar() {
                 {/* LOGGED IN */}
                 {user ? (
                     <>
-                        <Link to="/cart" className="text-gray-600 hover:text-blue-600 font-medium transition">
+                        <Link to="/cart" className="text-gray-600 hover:text-blue-600 font-medium transition relative">
                             Cart
+                            {totalItems > 0 && (
+                                <span className="absolute -top-3 -right-4 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    {totalItems}
+                                </span>
+                            )}
                         </Link>
                         <Link to="/orders" className="text-gray-600 hover:text-blue-600 font-medium transition">
                             Orders

@@ -21,7 +21,7 @@ export const clearCartAPI = async () => {
 };
 
 export const updateCartItemAPI = async (productId, quantity) => {
-    return await apiRequest("/carts/", {
+    return await apiRequest("/carts/items", {
         method: "PUT",
         body: JSON.stringify({ productId, quantity })
     });

@@ -30,7 +30,7 @@ public class CartMapper {
     public CartItemDto toCartItemDTO(CartItem item) {
         CartItemDto dto = new CartItemDto();
         dto.setId(item.getId());
-        dto.setProductId(item.getId());
+        dto.setProductId(item.getProduct().getId());
         dto.setProductName(item.getProduct().getName());
         dto.setQuantity(item.getQuantity());
         dto.setPrice(item.getPrice());

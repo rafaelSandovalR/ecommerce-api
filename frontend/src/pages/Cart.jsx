@@ -1,39 +1,14 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // For the "Continue Shopping" link
-import { fetchCartAPI, removeFromCartAPI } from "../services/cartService";
+import { useCart } from "../context/CartContext";
 import Navbar from "../components/Navbar";
 
 export default function Cart() {
-    const [cart, setCart] = useState(null); // Holds the entire Cart Object
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { cart, loading, error, removeFromCart, updateQuantity } = useCart();
 
-    useEffect(() => {
-        handleFetchCart();
-    }, []);
-
-    const handleFetchCart = async () => {
-        try {
-            const data = await fetchCartAPI();
-            setCart(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleRemoveItem = async (itemId) => {
-        if (!confirm("Are you sure you want to remove this item?")) return;
-
-        try {
-            await removeFromCartAPI(itemId);
-            // Refresh the cart UI
-            handleFetchCart();
-
-        } catch (err) {
-            alert(err.message);
-        }
+    const handleRemoveItem = (itemId) => {
+        // TODO: Best to handle here or in CartContext?
+        if (!window.confirm("Are you sure you want to remove this item?")) return;
+        removeFromCart(itemId);
     };
 
     if (loading) return <div className="text-center mt-20">Loading cart...</div>;
@@ -85,9 +60,19 @@ export default function Cart() {
                                 ${item.price}
                             </div>
 
-                            {/* Quantity */}
-                            <div className="col-span-2 text-center text-gray-800 font-medium">
-                                {item.quantity}
+                            {/* Quantity Controls */}
+                            <div className="col-span-2 flex text-center justify-center gap-4">
+                                <button
+                                    onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                                    className="w-7 h-7 bg-gray-200 rounded hover:bg-gray-300 font-bold"
+                                >-</button>
+                                <div className="text-gray-800 font-medium">
+                                    {item.quantity}
+                                </div>
+                                <button
+                                    onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                                    className="w-7 h-7 bg-gray-200 rounded hover:bg-gray-300 font-bold"
+                                >+</button>
                             </div>
 
                             {/* Actions */}

@@ -7,11 +7,11 @@ import com.rsandoval.ecommerce_api.mapper.OrderMapper;
 import com.rsandoval.ecommerce_api.model.*;
 import com.rsandoval.ecommerce_api.repository.OrderRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final CartService cartService;
@@ -89,17 +88,40 @@ public class OrderService {
                 .map(orderMapper::toDTO);
     }
 
+    @Transactional
     public OrderResponse updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
 
+        OrderStatus newStatus;
         try {
-            order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
-        } catch (IllegalArgumentException e) {
+            newStatus = OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e){
             throw new IllegalArgumentException("Invalid status: " + status);
         }
+        // Prevent modifying an already cancelled order
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("This order is already cancelled and cannot be modified.");
+        }
+        // Trigger restock only if transitioning to CANCELLED for the first time.
+        if (newStatus == OrderStatus.CANCELLED) {
+            restockInventory(order.getItems());
+        }
 
+        order.setStatus(newStatus);
         Order savedOrder = orderRepository.save(order);
         return orderMapper.toDTO(savedOrder);
+    }
+
+    private void restockInventory(List<OrderItem> items) {
+        List<Product>  productsToUpdate = items.stream()
+                .map(item -> {
+                    Product product = item.getProduct();
+                    product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+                    return product;
+                })
+                .toList();
+
+        productRepository.saveAll(productsToUpdate);
     }
 }

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback} from "react";
 import { addToCartAPI, clearCartAPI, fetchCartAPI, removeFromCartAPI, updateCartItemAPI} from "../services/cartService";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
@@ -7,8 +8,17 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { user } = useAuth();
 
     const refreshCart =  useCallback(async () => {
+
+        if (!user) {
+            setCart(null);
+            setError(null);
+            setLoading(false);
+            return;
+        }
+
         try{
             const data = await fetchCartAPI();
             setCart(data);
@@ -18,9 +28,9 @@ export const CartProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user]);
     
-        useEffect(() => {
+    useEffect(() => {
         refreshCart();
     }, [refreshCart]);
 

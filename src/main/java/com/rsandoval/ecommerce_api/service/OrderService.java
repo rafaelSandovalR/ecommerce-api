@@ -99,9 +99,9 @@ public class OrderService {
         } catch (IllegalArgumentException e){
             throw new IllegalArgumentException("Invalid status: " + status);
         }
-        // Prevent modifying an already cancelled order
-        if (order.getStatus() == OrderStatus.CANCELLED) {
-            throw new IllegalStateException("This order is already cancelled and cannot be modified.");
+        // Terminal States
+        if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new IllegalStateException("This order is already " + order.getStatus() + "and cannot be modified.");
         }
         // Trigger restock only if transitioning to CANCELLED for the first time.
         if (newStatus == OrderStatus.CANCELLED) {

@@ -101,7 +101,7 @@ public class OrderService {
         }
         // Terminal States
         if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
-            throw new IllegalStateException("This order is already " + order.getStatus() + "and cannot be modified.");
+            throw new IllegalStateException("This order is already " + order.getStatus() + " and cannot be modified.");
         }
         // Trigger restock only if transitioning to CANCELLED for the first time.
         if (newStatus == OrderStatus.CANCELLED) {

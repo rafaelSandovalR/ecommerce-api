@@ -31,7 +31,7 @@ export default function AdminOrderList() {
             alert("Order status updated!");
             loadOrders();
         } catch (error) {
-            alert("Failed to update status")
+            alert("Action prevented: " + error.message);
         }
     };
 

@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Bad request");
+        errorResponse.put("error", "Bad Request");
         errorResponse.put("message", ex.getMessage());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -48,7 +48,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentialsException(BadCredentialsException ex) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Invalid email or password");
+        errorResponse.put("error", "Invalid Email or Password");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid Operation");
+        errorResponse.put("message", ex.getMessage());
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

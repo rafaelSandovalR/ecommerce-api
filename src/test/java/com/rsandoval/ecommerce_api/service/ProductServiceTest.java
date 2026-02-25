@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -117,8 +118,26 @@ public class ProductServiceTest {
     @Test
     void testGetProductById_WhenProductExists_ShouldReturnProductResponse() {
         // ARRANGE
+        Product mockProduct = new Product();
+        Long productId = 1L;
+        String productName = "T-Shirt";
+        mockProduct.setId(productId);
+        mockProduct.setName(productName);
+
+        ProductResponse mockResponse = new ProductResponse();
+        mockResponse.setId(productId);
+        mockResponse.setName(productName);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(mockProduct));
+        when(productMapper.toDTO(any(Product.class))).thenReturn(mockResponse);
         // ACT
+        ProductResponse result = productService.getProductById(productId);
+
         // ASSERT
+        assertNotNull(result);
+        assertEquals(productId, result.getId());
+        assertEquals(productName, result.getName());
+        verify(productRepository, times(1)).findById(productId);
     }
 
     @Test

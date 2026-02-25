@@ -1,6 +1,7 @@
 package com.rsandoval.ecommerce_api.service;
 
 import com.rsandoval.ecommerce_api.dto.product.ProductResponse;
+import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.mapper.ProductMapper;
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
@@ -14,12 +15,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -143,8 +144,17 @@ public class ProductServiceTest {
     @Test
     void testGetProductById_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
         // ARRANGE
-        // ACT
-        // ASSERT
+        Long nonExistentProductId = 99L;
+
+        when(productRepository.findById(nonExistentProductId)).thenReturn(Optional.empty());
+        // ACT & ASSERT
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.getProductById(nonExistentProductId);
+        });
+
+        assertTrue(exception.getMessage().contains("Product not found"));
+        verify(productRepository, times(1)).findById(nonExistentProductId);
+        verify(productMapper, never()).toDTO(any());
     }
 
     @Test

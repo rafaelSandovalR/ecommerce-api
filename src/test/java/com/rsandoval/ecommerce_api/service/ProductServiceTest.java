@@ -1,9 +1,12 @@
 package com.rsandoval.ecommerce_api.service;
 
+import com.rsandoval.ecommerce_api.dto.product.ProductRequest;
 import com.rsandoval.ecommerce_api.dto.product.ProductResponse;
 import com.rsandoval.ecommerce_api.exception.ResourceNotFoundException;
 import com.rsandoval.ecommerce_api.mapper.ProductMapper;
+import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
+import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
+
+    @Mock
+    private CategoryRepository categoryRepository;
 
     @Mock
     private ProductRepository productRepository;
@@ -160,8 +166,40 @@ public class ProductServiceTest {
     @Test
     void testCreateProduct_WithValidCategory_ShouldSaveAndReturnProduct() {
         // ARRANGE
+        Category mockCategory = new Category();
+        Long categoryId = 1L;
+        String categoryName = "Book";
+        mockCategory.setId(categoryId);
+        mockCategory.setName(categoryName);
+
+        Product mockProduct = new Product();
+        Long productId = 5L;
+        String productName = "A Knight of the Seven Kingdoms";
+        mockProduct.setId(productId);
+        mockProduct.setName(productName);
+
+        ProductRequest request = new ProductRequest();
+        request.setCategoryId(categoryId);
+        request.setName(productName);
+
+        ProductResponse mockResponse = new ProductResponse();
+        mockResponse.setName(productName);
+        mockResponse.setId(productId);
+        mockResponse.setCategoryName(categoryName);
+
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
+        when(productMapper.toEntity(request, mockCategory)).thenReturn(mockProduct);
+        when(productRepository.save(any(Product.class))).thenReturn(mockProduct);
+        when(productMapper.toDTO(any(Product.class))).thenReturn(mockResponse);
         // ACT
+        ProductResponse result = productService.createProduct(request);
         // ASSERT
+        assertNotNull(result);
+        assertEquals(productId, result.getId());
+        assertEquals(productName, result.getName());
+        assertEquals(categoryName, result.getCategoryName());
+        verify(productRepository, times(1)).save(mockProduct);
+        verify(categoryRepository, times(1)).findById(categoryId);
     }
 
     @Test

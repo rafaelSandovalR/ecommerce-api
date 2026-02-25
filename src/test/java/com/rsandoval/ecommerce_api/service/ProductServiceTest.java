@@ -44,14 +44,16 @@ public class ProductServiceTest {
         Pageable pageable = PageRequest.of(0,10);
 
         Product mockProduct = new Product();
-        mockProduct.setId(10L);
-        mockProduct.setName("Smartphone");
+        String productName = "Smartphone";
+        Long productId = 10L;
+        mockProduct.setId(productId);
+        mockProduct.setName(productName);
 
         Page<Product> mockProductPage = new PageImpl<>(List.of(mockProduct));
 
         ProductResponse mockResponse = new ProductResponse();
-        mockResponse.setId(10L);
-        mockResponse.setName("Smartphone");
+        mockResponse.setId(productId);
+        mockResponse.setName(productName);
 
         when(productRepository.searchProducts(null, categoryId, minPrice, maxPrice, pageable))
                 .thenReturn(mockProductPage);
@@ -65,13 +67,115 @@ public class ProductServiceTest {
         // ASSERT
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        assertEquals("Smartphone", result.getContent().get(0).getName());
+        assertEquals(productName, result.getContent().get(0).getName());
         verify(productRepository, times(1))
                 .searchProducts(null, categoryId, minPrice, maxPrice, pageable);
     }
 
     @Test
+    void testGetAllProducts_WithKeyword_ShouldFormatSearchPatternCorrectly() {
+        /*
+            Why: We have specific logic ("%" + keyword.toLowerCase() + "%") to format the search.
+            This test proves that if a user types "  ApPle ", it correctly queries for %apple%.
+        */
+        // ARRANGE
+        String keyword = "ApPle";
+        String expectedSearchPattern = "%apple%";
+        String productName = "Apple";
+        Long categoryId = 1L;
+        Long productId = 5L;
+        BigDecimal minPrice = new BigDecimal("2.00");
+        BigDecimal maxPrice = new BigDecimal("10.00");
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Product mockProduct = new Product();
+        mockProduct.setId(productId);
+        mockProduct.setName(productName);
+
+        Page<Product> mockProductPage = new PageImpl<>(List.of(mockProduct));
+
+        ProductResponse mockResponse = new ProductResponse();
+        mockResponse.setId(productId);
+        mockResponse.setName(productName);
+
+        when(productRepository.searchProducts(expectedSearchPattern, categoryId, minPrice, maxPrice, pageable))
+                .thenReturn(mockProductPage);
+        when(productMapper.toDTO(any(Product.class))).thenReturn(mockResponse);
+
+        // ACT
+        Page<ProductResponse> result = productService.getAllProducts(
+                keyword, categoryId, minPrice, maxPrice, pageable
+        );
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(productName, result.getContent().get(0).getName());
+        verify(productRepository, times(1))
+                .searchProducts(expectedSearchPattern, categoryId, minPrice, maxPrice, pageable);
+    }
+
+    @Test
+    void testGetProductById_WhenProductExists_ShouldReturnProductResponse() {
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testGetProductById_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testCreateProduct_WithValidCategory_ShouldSaveAndReturnProduct() {
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testCreateProduct_WhenCategoryDoesNotExist_ShouldThrowResourceNotFoundException() {
+        /*
+            Why: Because getCategoryEntity helper throws an exception if the DB comes back empty,
+            we need a test to prove the creation stops immediately and doesn't try to save a product with a null category.
+        */
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+
+    @Test
     void testUpdateProduct_WhenProductAndCategoryExist_ShouldUpdateFieldsAndSave() {
+        // ARRANGE
+        Product mockProduct = new Product();
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testUpdateProduct_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testDeleteProduct_WhenProductExists_ShouldSetDeletedFlagToTrue() {
+    /*
+        Why: We are doing a Soft Delete (product.setDeleted(true)), not a hard delete from the database.
+        This test will use Mockito's verify to ensure productRepository.delete() is never called,
+        but productRepository.save() is called with a product that has isDeleted() == true.
+     */
+        // ARRANGE
+        // ACT
+        // ASSERT
+    }
+
+    @Test
+    void testDeleteProduct_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
         // ARRANGE
         // ACT
         // ASSERT

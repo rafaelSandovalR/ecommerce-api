@@ -230,9 +230,51 @@ public class ProductServiceTest {
     @Test
     void testUpdateProduct_WhenProductAndCategoryExist_ShouldUpdateFieldsAndSave() {
         // ARRANGE
-        Product mockProduct = new Product();
+        Long categoryId = 1L;
+        String categoryName = "Electronics";
+        Long productId = 5L;
+        String updatedName = "iPhone 17";
+        BigDecimal updatedPrice = new BigDecimal("999.99");
+        Integer updatedQty = 25;
+
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setName("Smartphone");
+        existingProduct.setPrice(new BigDecimal("499.99"));
+        existingProduct.setStockQuantity(15);
+
+        Category newCategory = new Category();
+        newCategory.setId(categoryId);
+        newCategory.setName(categoryName);
+
+        ProductRequest request = new ProductRequest();
+        request.setName(updatedName);
+        request.setCategoryId(categoryId);
+        request.setPrice(updatedPrice);
+        request.setStockQuantity(updatedQty);
+
+        ProductResponse mockResponse = new ProductResponse();
+        mockResponse.setId(productId);
+        mockResponse.setName(updatedName);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(newCategory));
+        when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
+        when(productMapper.toDTO(existingProduct)).thenReturn(mockResponse);
+
         // ACT
+        ProductResponse result = productService.updateProduct(productId, request);
+
         // ASSERT
+        assertNotNull(result);
+        assertEquals(updatedName, existingProduct.getName());
+        assertEquals(updatedPrice, existingProduct.getPrice());
+        assertEquals(updatedQty, existingProduct.getStockQuantity());
+        assertEquals(newCategory, existingProduct.getCategory());
+
+        verify(productRepository, times(1)).findById(productId);
+        verify(categoryRepository, times(1)).findById(categoryId);
+        verify(productRepository, times(1)).save(existingProduct);
     }
 
     @Test

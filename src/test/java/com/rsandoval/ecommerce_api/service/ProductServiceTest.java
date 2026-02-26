@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -209,8 +208,22 @@ public class ProductServiceTest {
             we need a test to prove the creation stops immediately and doesn't try to save a product with a null category.
         */
         // ARRANGE
-        // ACT
-        // ASSERT
+        Long nonExistentId = 99L;
+        ProductRequest request = new ProductRequest();
+        request.setName("Plutonium");
+        request.setCategoryId(nonExistentId);
+
+        when(categoryRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.createProduct(request);
+        });
+
+        assertTrue(exception.getMessage().contains("Category not found"));
+        verify(categoryRepository, times(1)).findById(nonExistentId);
+        verify(productMapper, never()).toEntity(any(), any());
+        verify(productRepository, never()).save(any());
     }
 
 

@@ -280,8 +280,20 @@ public class ProductServiceTest {
     @Test
     void testUpdateProduct_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
         // ARRANGE
-        // ACT
-        // ASSERT
+        Long nonExistentId = 999L;
+        ProductRequest request = new ProductRequest();
+        request.setName("Polonium");
+
+        when(productRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+        // ACT & ASSERT
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.updateProduct(nonExistentId, request);
+        });
+
+        assertTrue(exception.getMessage().contains("Product not found"));
+        verify(productRepository, times(1)).findById(nonExistentId);
+        verify(categoryRepository, never()).findById(any());
+        verify(productRepository, never()).save(any());
     }
 
     @Test

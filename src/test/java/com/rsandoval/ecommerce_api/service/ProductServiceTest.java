@@ -325,7 +325,20 @@ public class ProductServiceTest {
     @Test
     void testDeleteProduct_WhenProductDoesNotExist_ShouldThrowResourceNotFoundException() {
         // ARRANGE
+        Long nonExistentId = 99L;
+
+        when(productRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
         // ACT
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productService.deleteProduct(nonExistentId);
+        });
+
         // ASSERT
+        assertTrue(exception.getMessage().contains("Product not found"));
+        verify(productRepository, times(1)).findById(nonExistentId);
+        verify(productRepository, never()).delete(any());
+        verify(productRepository, never()).deleteById(any());
+        verify(productRepository, never()).save(any());
     }
 }

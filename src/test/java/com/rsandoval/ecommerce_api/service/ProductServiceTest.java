@@ -304,8 +304,22 @@ public class ProductServiceTest {
         but productRepository.save() is called with a product that has isDeleted() == true.
      */
         // ARRANGE
+        Long productId = 1L;
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setDeleted(false);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+
         // ACT
+        productService.deleteProduct(productId);
+
         // ASSERT
+        assertTrue(existingProduct.isDeleted());
+        verify(productRepository, times(1)).findById(productId);
+        verify(productRepository, times(1)).save(existingProduct);
+        verify(productRepository, never()).delete(any());
+        verify(productRepository, never()).deleteById(any());
     }
 
     @Test

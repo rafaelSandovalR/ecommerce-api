@@ -72,4 +72,39 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.content[0].stockQuantity").value(stockQty))
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
+
+    @Test
+    void testGetProductById_WhenProductExists_ShouldReturn200Ok() throws Exception {
+        // ARRANGE:
+        // Save a Category to the database
+        Category category = new Category();
+        category.setName("Clothing");
+        categoryRepository.save(category);
+        // Save a Product to the database
+        Product product = new Product();
+        String productName = "Hoodie";
+        BigDecimal price = new BigDecimal("24.99");
+        product.setName(productName);
+        product.setCategory(category);
+        product.setPrice(price);
+
+        Long productId = productRepository.save(product).getId();
+
+        // ACT & ASSERT
+        // Perform a GET request to "/api/products/" + productId
+        mockMvc.perform(get("/api/products/" + productId).contentType(MediaType.APPLICATION_JSON))
+        // Check HTTP status and JSON responses
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(productName))
+                .andExpect(jsonPath("$.price").value(price.doubleValue()));
+    }
+
+    @Test
+    void testGetProductById_WhenProductDoesNotExist_ShouldReturn404NotFound() throws Exception {
+        // ARRANGE
+        // Pick an ID that doesn't exist
+        // ACT & ASSERT
+        // Perform GET request with non-existent ID
+        // Check HTTP status
+    }
 }

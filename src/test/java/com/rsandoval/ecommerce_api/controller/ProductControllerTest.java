@@ -1,9 +1,16 @@
 package com.rsandoval.ecommerce_api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rsandoval.ecommerce_api.dto.product.ProductRequest;
+import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
+import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
+import com.rsandoval.ecommerce_api.repository.UserRepository;
+import com.rsandoval.ecommerce_api.security.JwtUtils;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,13 +39,21 @@ import java.math.BigDecimal;
 public class ProductControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -109,5 +125,39 @@ public class ProductControllerTest {
         mockMvc.perform(get("/api/products/" + nonExistentId).contentType(MediaType.APPLICATION_JSON))
         // Check HTTP status
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCreateProduct_AsAdmin_ShouldReturn201Created() throws Exception {
+        // ARRANGE
+        Category category = new Category();
+        String categoryName = "Gaming";
+        category.setName(categoryName);
+        categoryRepository.save(category);
+
+        User admin = new User();
+        admin.setEmail("admin@test.com");
+        admin.setName("Admin User");
+        admin.setPassword("encryptedMockPassword");
+        admin.setRole(Role.ROLE_ADMIN);
+        userRepository.save(admin);
+
+        String token = jwtUtils.generateToken(admin.getEmail(), admin.getRole().name());
+
+        ProductRequest request = new ProductRequest();
+        String productName = "Playstation 5";
+        request.setName(productName);
+        request.setCategoryId(category.getId());
+        request.setPrice(new BigDecimal("499.99"));
+        request.setStockQuantity(20);
+
+        // ACT & ASSERT
+        mockMvc.perform(post("/api/products")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(productName))
+                .andExpect(jsonPath("$.categoryName").value(categoryName));
     }
 }

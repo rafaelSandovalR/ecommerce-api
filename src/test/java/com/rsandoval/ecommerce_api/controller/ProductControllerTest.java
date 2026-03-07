@@ -103,8 +103,11 @@ public class ProductControllerTest {
     void testGetProductById_WhenProductDoesNotExist_ShouldReturn404NotFound() throws Exception {
         // ARRANGE
         // Pick an ID that doesn't exist
+        Long nonExistentId = 99L;
         // ACT & ASSERT
         // Perform GET request with non-existent ID
+        mockMvc.perform(get("/api/products/" + nonExistentId).contentType(MediaType.APPLICATION_JSON))
         // Check HTTP status
+                .andExpect(status().isNotFound());
     }
 }

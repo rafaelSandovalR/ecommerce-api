@@ -10,7 +10,6 @@ import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import com.rsandoval.ecommerce_api.security.JwtUtils;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,29 +61,18 @@ public class ProductControllerTest {
     @Test
     void testGetAllProducts_ShouldReturn200OKAndPageOfProducts() throws Exception {
         // ARRANGE: Save a real product to the H2 database
-        String productName = "Integration Test Laptop";
-        BigDecimal price = new BigDecimal("999.99");
-        Integer stockQty = 10;
+        Category category = createCategory("Electronics");
 
-        Category category = new Category();
-        category.setName("Electronics");
-        categoryRepository.save(category);
-
-        Product product = new Product();
-        product.setName(productName);
-        product.setPrice(price  );
-        product.setStockQuantity(stockQty);
-        product.setCategory(category);
-        productRepository.save(product);
+        Product existingProduct = createProduct(category, "Integration Test Laptop", "999.99", 10);
 
         // ACT: Use MockMvc to send a GET request to "/api/products"
         // & ASSERT: Check the HTTP status and the JSON responses
         mockMvc.perform(get("/api/products").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content[0].name").value(productName))
-                .andExpect(jsonPath("$.content[0].price").value(price))
-                .andExpect(jsonPath("$.content[0].stockQuantity").value(stockQty))
+                .andExpect(jsonPath("$.content[0].name").value(existingProduct.getName()))
+                .andExpect(jsonPath("$.content[0].price").value(existingProduct.getPrice().doubleValue()))
+                .andExpect(jsonPath("$.content[0].stockQuantity").value(existingProduct.getStockQuantity()))
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
 
@@ -93,26 +80,18 @@ public class ProductControllerTest {
     void testGetProductById_WhenProductExists_ShouldReturn200Ok() throws Exception {
         // ARRANGE:
         // Save a Category to the database
-        Category category = new Category();
-        category.setName("Clothing");
-        categoryRepository.save(category);
+        Category category = createCategory("Clothing");
         // Save a Product to the database
-        Product product = new Product();
-        String productName = "Hoodie";
-        BigDecimal price = new BigDecimal("24.99");
-        product.setName(productName);
-        product.setCategory(category);
-        product.setPrice(price);
-
-        Long productId = productRepository.save(product).getId();
+        Product existingProduct = createProduct(category, "Hoodie", "24.99", 10);
 
         // ACT & ASSERT
         // Perform a GET request to "/api/products/" + productId
-        mockMvc.perform(get("/api/products/" + productId).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/products/" + existingProduct.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
         // Check HTTP status and JSON responses
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(productName))
-                .andExpect(jsonPath("$.price").value(price.doubleValue()));
+                .andExpect(jsonPath("$.name").value(existingProduct.getName()))
+                .andExpect(jsonPath("$.price").value(existingProduct.getPrice().doubleValue()));
     }
 
     @Test
@@ -127,37 +106,80 @@ public class ProductControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void testCreateProduct_AsAdmin_ShouldReturn201Created() throws Exception {
-        // ARRANGE
-        Category category = new Category();
-        String categoryName = "Gaming";
-        category.setName(categoryName);
-        categoryRepository.save(category);
-
+    private User createAdmin() {
         User admin = new User();
         admin.setEmail("admin@test.com");
         admin.setName("Admin User");
         admin.setPassword("encryptedMockPassword");
         admin.setRole(Role.ROLE_ADMIN);
         userRepository.save(admin);
+        return admin;
+    }
 
+    private Category createCategory(String categoryName) {
+        Category category = new Category();
+        category.setName(categoryName);
+        return categoryRepository.save(category);
+    }
+
+    private Product createProduct(Category category, String name, String price, Integer stock) {
+        Product product = new Product();
+        product.setCategory(category);
+        product.setName(name);
+        product.setPrice(new BigDecimal(price));
+        product.setStockQuantity(stock);
+        return productRepository.save(product);
+    }
+
+    @Test
+    void testCreateProduct_AsAdmin_ShouldReturn201Created() throws Exception {
+        // ARRANGE
+        Category category = createCategory("Gaming");
+
+        User admin = createAdmin();
         String token = jwtUtils.generateToken(admin.getEmail(), admin.getRole().name());
 
         ProductRequest request = new ProductRequest();
-        String productName = "Playstation 5";
-        request.setName(productName);
+        request.setName("Playstation 5");
         request.setCategoryId(category.getId());
         request.setPrice(new BigDecimal("499.99"));
         request.setStockQuantity(20);
 
         // ACT & ASSERT
         mockMvc.perform(post("/api/products")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(productName))
-                .andExpect(jsonPath("$.categoryName").value(categoryName));
+                .andExpect(jsonPath("$.name").value(request.getName()))
+                .andExpect(jsonPath("$.categoryName").value(category.getName()));
+    }
+
+    @Test
+    void testUpdateProduct_AsAdmin_ShouldReturn200Ok() throws Exception {
+        // ARRANGE
+        Category category = createCategory("Footwear");
+
+        User admin = createAdmin();
+        String token = jwtUtils.generateToken(admin.getEmail(), admin.getRole().name());
+
+        Product existingProduct = createProduct(category, "Nike Air Max 95", "200.00", 20);
+
+        ProductRequest request = new ProductRequest();
+        request.setName("Adidas Ultraboost");
+        request.setPrice(new BigDecimal("180.00"));
+        request.setStockQuantity(15);
+        request.setCategoryId(category.getId());
+
+        // ACT & ASSERT
+        mockMvc.perform(put("/api/products/" + existingProduct.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(request.getName()))
+                .andExpect(jsonPath("$.price").value(request.getPrice().doubleValue()))
+                .andExpect(jsonPath("$.stockQuantity").value(request.getStockQuantity()))
+                .andExpect(jsonPath("$.id").value(existingProduct.getId()));
     }
 }

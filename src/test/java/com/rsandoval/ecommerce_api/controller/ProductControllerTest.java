@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -181,5 +182,24 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.price").value(request.getPrice().doubleValue()))
                 .andExpect(jsonPath("$.stockQuantity").value(request.getStockQuantity()))
                 .andExpect(jsonPath("$.id").value(existingProduct.getId()));
+    }
+
+    @Test
+    void testDeleteProduct_AsAdmin_ShouldReturn204NoContent() throws Exception {
+        // ARRANGE
+        User admin = createAdmin();
+        String token = jwtUtils.generateToken(admin.getEmail(), admin.getRole().name());
+        Category category = createCategory("Books");
+        Product existingProduct = createProduct(category, "Crying of Lot 49", "9.99", 1);
+
+        // ACT & ASSERT
+        mockMvc.perform(delete("/api/products/" + existingProduct.getId())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        // Fetch the absolute latest state from db.
+        // NOTE: Works with existingProduct entity due to @Transactional, but this is safer
+        Product deletedProduct = productRepository.findById(existingProduct.getId()).orElseThrow();
+        assertTrue(existingProduct.isDeleted());
     }
 }

@@ -1,6 +1,8 @@
 package com.rsandoval.ecommerce_api.controller;
 
+import com.jayway.jsonpath.JsonPath;
 import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
+import com.rsandoval.ecommerce_api.dto.cart.CartResponse;
 import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
@@ -18,6 +20,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
@@ -153,5 +156,31 @@ public class CartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].quantity").value(request.getQuantity()))
                 .andExpect(jsonPath("$.totalPrice").value(product.getPrice().doubleValue() * request.getQuantity()));
+    }
+
+    @Test
+    void testRemoveItemFromCart_ShouldReturn200Ok() throws Exception {
+        // ARRANGE
+        String token = loginUserAndGenerateToken();
+        Product product = createProduct("Kitchen", "Coffee Mug", "9.99", 50);
+        CartRequest prepCart = new CartRequest();
+        prepCart.setProductId(product.getId());
+        prepCart.setQuantity(5);
+        MvcResult result = mockMvc.perform(post("/api/carts/add")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(prepCart)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        Integer extractedId = JsonPath.read(jsonResponse, "$.items[0].id");
+        long cartItemId = extractedId.longValue();
+
+        // ACT & ASSERT
+        mockMvc.perform(delete("/api/carts/remove/" + cartItemId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items").isEmpty());
     }
 }

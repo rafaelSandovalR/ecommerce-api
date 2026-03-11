@@ -1,5 +1,6 @@
 package com.rsandoval.ecommerce_api.controller;
 
+import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
 import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,6 +51,8 @@ public class CartControllerTest {
     @Autowired
     private CartRepository cartRepository;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setUp() {
         cartRepository.deleteAll();
@@ -72,25 +77,55 @@ public class CartControllerTest {
         return categoryRepository.save(category);
     }
 
-    private Product createProduct(Category category, String name, String price, Integer stock) {
+    private Product createProduct(String category, String name, String price, Integer stock) {
+        if (!categoryRepository.existsByName(category)) {
+            Category newCategory = createCategory(category);
+        }
+
+        Category existingCategory = categoryRepository.findByName(category).orElseThrow();
         Product product = new Product();
-        product.setCategory(category);
+        product.setCategory(existingCategory);
         product.setName(name);
         product.setPrice(new BigDecimal(price));
         product.setStockQuantity(stock);
         return productRepository.save(product);
     }
 
+    private String loginUserAndGenerateToken() {
+        User user = createStandardUser();
+        return jwtUtils.generateToken(user.getEmail(), user.getRole().name());
+    }
+
     @Test
     void testGetCart_ShouldReturn200OkAndEmptyCart() throws Exception {
         // ARRANGE
-        User user = createStandardUser();
-        String token = jwtUtils.generateToken(user.getEmail(), user.getRole().name());
+        String token = loginUserAndGenerateToken();
 
+        // ACT & ASSERT
         mockMvc.perform(get("/api/carts")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items").isEmpty())
                 .andExpect(jsonPath("$.totalPrice").value(0));
+    }
+
+    @Test
+    void testAddItemToCart_ShouldReturn200OkAndUpdatedCart() throws Exception {
+        // ARRANGE
+        String token = loginUserAndGenerateToken();
+        Product product = createProduct("Electronics", "Headphones", "119.99", 25);
+        CartRequest request = new CartRequest();
+        request.setProductId(product.getId());
+        request.setQuantity(2);
+
+
+        // ACT & ASSERT
+        mockMvc.perform(post("/api/carts/add")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0].productName").value(product.getName()))
+                .andExpect(jsonPath("$.totalPrice").value(product.getPrice().doubleValue() * request.getQuantity()));
     }
 }

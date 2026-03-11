@@ -54,9 +54,14 @@ public class ProductControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Not needed due to @Transactional
     @BeforeEach
     void setUp() {
-        productRepository.deleteAll(); // Ensure a clean slate
+        // Ensure a clean slate
+        // Order matters; Delete child tables before parent tables
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

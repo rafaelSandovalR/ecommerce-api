@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
 import com.rsandoval.ecommerce_api.dto.cart.CartResponse;
 import com.rsandoval.ecommerce_api.enums.Role;
+import com.rsandoval.ecommerce_api.model.Cart;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.model.User;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -141,9 +143,10 @@ public class CartControllerTest {
         prepCart.setProductId(product.getId());
         prepCart.setQuantity(4);
         mockMvc.perform(post("/api/carts/add")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(prepCart)));
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(prepCart)))
+                .andExpect(status().isOk());
 
         CartRequest request = new CartRequest();
         request.setProductId(product.getId());
@@ -182,5 +185,29 @@ public class CartControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items").isEmpty());
+    }
+
+    @Test
+    void testClearCart_ShouldReturn204NoContent() throws Exception {
+        // ARRANGE
+        User user = createStandardUser();
+        String token = jwtUtils.generateToken(user.getEmail(), user.getRole().name());
+        Product product = createProduct("Footwear", "Hoka Slides", "49.99", 10);
+        CartRequest prepCart = new CartRequest();
+        prepCart.setProductId(product.getId());
+        prepCart.setQuantity(3);
+        mockMvc.perform(post("/api/carts/add")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(prepCart)))
+                .andExpect(status().isOk());
+
+        // ACT & ASSERT
+        mockMvc.perform(delete("/api/carts/clear")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        Cart cart = cartRepository.findByUser(user).orElseThrow();
+        assertTrue(cart.getItems().isEmpty());
     }
 }

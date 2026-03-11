@@ -128,4 +128,30 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.items[0].productName").value(product.getName()))
                 .andExpect(jsonPath("$.totalPrice").value(product.getPrice().doubleValue() * request.getQuantity()));
     }
+
+    @Test
+    void testUpdateItemQuantity_ShouldReturn200Ok() throws Exception {
+        // ARRANGE
+        String token = loginUserAndGenerateToken();
+        Product product = createProduct("Clothing", "T-Shirt", "29.99", 30);
+        CartRequest prepCart = new CartRequest();
+        prepCart.setProductId(product.getId());
+        prepCart.setQuantity(4);
+        mockMvc.perform(post("/api/carts/add")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(prepCart)));
+
+        CartRequest request = new CartRequest();
+        request.setProductId(product.getId());
+        request.setQuantity(10);
+        // ACT & ASSERT
+        mockMvc.perform(put("/api/carts/items")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0].quantity").value(request.getQuantity()))
+                .andExpect(jsonPath("$.totalPrice").value(product.getPrice().doubleValue() * request.getQuantity()));
+    }
 }

@@ -2,6 +2,7 @@ package com.rsandoval.ecommerce_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
+import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.dto.order.PlaceOrderRequest;
 import com.rsandoval.ecommerce_api.enums.OrderStatus;
 import com.rsandoval.ecommerce_api.enums.Role;
@@ -20,6 +21,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -94,6 +96,16 @@ public class OrderControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private void createOrder(Product product, int qty, String token) throws Exception{
+        addToCart(product.getId(), qty,token);
+        PlaceOrderRequest request = new PlaceOrderRequest("123 Mock Address");
+        mockMvc.perform(post("/api/orders/place")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+    }
+
     @Test
     void testPlaceOrder_ShouldReturn201CreatedAndPlacedOrder() throws Exception {
         // ARRANGE
@@ -116,5 +128,21 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.totalPrice").value(expectedTotal))
                 .andExpect(jsonPath("$.items[0].quantity").value(cartQty))
                 .andExpect(jsonPath("$.items[0].productName").value(product.getName()));
+    }
+
+    @Test
+    void testGetUserOrders_ShouldReturn200OkAndPageOfOrders() throws Exception {
+        // ARRANGE
+        String token = loginAndGenerateToken();
+        Product product = createProduct("Books", "Pride & Prejudice", "9.99", 25);
+        createOrder(product, 2, token);
+
+        // ACT & ASSERT
+        mockMvc.perform(get("/api/orders")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].items[0].productName").value(product.getName()))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 }

@@ -1,10 +1,9 @@
 package com.rsandoval.ecommerce_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
-import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.dto.order.PlaceOrderRequest;
-import com.rsandoval.ecommerce_api.enums.OrderStatus;
 import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;
@@ -13,7 +12,6 @@ import com.rsandoval.ecommerce_api.repository.CategoryRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import com.rsandoval.ecommerce_api.security.JwtUtils;
-import com.rsandoval.ecommerce_api.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,12 +19,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,14 +95,17 @@ public class OrderControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private void createOrder(Product product, int qty, String token) throws Exception{
+    private String createOrder(Product product, int qty, String token) throws Exception{
         addToCart(product.getId(), qty,token);
         PlaceOrderRequest request = new PlaceOrderRequest("123 Mock Address");
-        mockMvc.perform(post("/api/orders/place")
+        return mockMvc.perform(post("/api/orders/place")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
     }
 
     @Test
@@ -144,5 +146,30 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content[0].items[0].productName").value(product.getName()))
                 .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void testGetOrder_ShouldReturn200OkAndOrderDetails() throws Exception {
+        // ARRANGE
+        String token = loginAndGenerateToken();
+        Product product = createProduct("Office", "Stapler", "7.99", 30);
+        String jsonResponse = createOrder(product, 3, token);
+
+        // Order details
+        Integer extractedId = JsonPath.read(jsonResponse, "$.id");
+        long orderId = extractedId.longValue();
+
+        String expectedStatus = JsonPath.read(jsonResponse, "$.status");
+        double expectedTotal = JsonPath.read(jsonResponse, "$.totalPrice");
+
+        // ACT & ASSERT
+        mockMvc.perform(get("/api/orders/" + orderId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(orderId))
+                .andExpect(jsonPath("$.status").value(expectedStatus))
+                .andExpect(jsonPath("$.totalPrice").value(expectedTotal))
+                .andExpect(jsonPath("$.items[0].productName").value(product.getName()));
+
     }
 }

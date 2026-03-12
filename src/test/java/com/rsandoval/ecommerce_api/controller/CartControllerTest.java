@@ -2,7 +2,6 @@ package com.rsandoval.ecommerce_api.controller;
 
 import com.jayway.jsonpath.JsonPath;
 import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
-import com.rsandoval.ecommerce_api.dto.cart.CartResponse;
 import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Cart;
 import com.rsandoval.ecommerce_api.model.Category;

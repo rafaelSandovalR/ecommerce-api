@@ -22,9 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,5 +134,27 @@ public class AdminOrderControllerTest {
                 .andExpect(jsonPath("$.content[0].id").value(orderB_ExpectedId))
                 .andExpect(jsonPath("$.content[1].userEmail").value(jwtUtils.extractUsername(standardTokenA)))
                 .andExpect(jsonPath("$.content[1].id").value(orderA_ExpectedId));
+    }
+
+    @Test
+    void testUpdateStatus_AsAdmin_ShouldReturn200OkAndUpdatedOrder() throws Exception {
+        // ARRANGE
+        String standardToken = loginUserAndGenerateToken(Role.ROLE_USER, "Standard User", "user@test.com");
+        Product product = createProduct("Gaming", "GTA VI", "69.99", 100);
+        String order = createOrder(product, 3, standardToken);
+
+        assertEquals("PAID", JsonPath.read(order, "$.status"));
+
+        String adminToken = loginUserAndGenerateToken(Role.ROLE_ADMIN, "Admin User", "admin@test.com");
+        int orderId = JsonPath.read(order, "$.id");
+        Map<String, String> requestPayload = Map.of("status", "SHIPPED");
+
+        // ACT & ASSERT
+        mockMvc.perform(put("/api/admin/orders/" + orderId + "/status")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestPayload)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(requestPayload.get("status")));
     }
 }

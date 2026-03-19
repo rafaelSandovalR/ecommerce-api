@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback} from "reac
 import { addToCartAPI, clearCartAPI, fetchCartAPI, removeFromCartAPI, updateCartItemAPI} from "../services/cartService";
 import { useAuth } from "./AuthContext";
 
-const CartContext = createContext();
+export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState(null);

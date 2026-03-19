@@ -45,5 +45,34 @@ describe('Navbar Component', () => {
         expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();
     });
 
+    it('Scenario B: Renders User Links and Cart Badge when logged in', () => {
+        // ARRANGE
+        const authValue = { user: { role: 'ROLE_USER' }, logout: vi.fn() };
+        const cartValue = { totalItems: 3 };
 
+        // ACT
+        customRender(<Navbar />, { providerProps: { authValue, cartValue } });
+
+        // ASSERT
+        expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /orders/i })).toBeInTheDocument();
+
+        // Check for the cart badge
+        expect(screen.getByText('3')).toBeInTheDocument();
+
+        // Standard users should NOT see the admin panel link
+        expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();
+    });
+
+    it('Scenario C: Renders the Admin Panel link only for Admins', () => {
+        // ARRANGE
+        const authValue = { user: { role: 'ROLE_ADMIN' }, logout: vi.fn() };
+        const cartValue = { totalItems: 0 };
+
+        // ACT
+        customRender(<Navbar />, { providerProps: { authValue, cartValue } });
+
+        // ASSERT: Admin user SHOULD see the admin panel link
+        expect(screen.getByRole('link', { name: /admin panel/i })).toBeInTheDocument();
+    });
 });

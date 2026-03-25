@@ -26,5 +26,13 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
 
+  frontend:
+    build: ./frontend
+    container_name: ecommerce-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - app
+
 volumes:
   ecommerce_data:

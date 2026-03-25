@@ -79,21 +79,22 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <input name="name" value={formData.name} onChange={handleChange} className="w-full border p-2 rounded" required />
+                        <label htmlFor="productName" className="block text-sm font-medium text-gray-700">Name</label>
+                        <input id="productName" name="name" value={formData.name} onChange={handleChange} className="w-full border p-2 rounded" required />
                     </div>
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Description</label>
-                        <input name="description" value={formData.description} onChange={handleChange} className="w-full border p-2 rounded" />
+                        <label htmlFor="productDescription" className="block text-sm font-medium text-gray-700">Description</label>
+                        <input id="productDescription" name="description" value={formData.description} onChange={handleChange} className="w-full border p-2 rounded" />
                     </div>
 
                     {/* Price & Stock Row */}
                     <div className="flex gap-2">
                         <div className="w-1/2">
-                            <label className="block text-sm font-medium text-gray-700">Price ($)</label>
+                            <label htmlFor="productPrice" className="block text-sm font-medium text-gray-700">Price ($)</label>
                             <input 
+                                id="productPrice"
                                 name="price" 
                                 type="number" 
                                 step="0.01"
@@ -105,8 +106,9 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                             />
                         </div>
                         <div className="w-1/2">
-                            <label className="block text-sm font-medium text-gray-700">Stock</label>
+                            <label htmlFor="productStockQuantity" className="block text-sm font-medium text-gray-700">Stock</label>
                             <input 
+                                id="productStockQuantity"
                                 name="stockQuantity" 
                                 type="number"
                                 min="0"
@@ -120,8 +122,8 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
 
                     {/* Category Dropdown */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Category</label>
-                        <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="w-full border p-2 rounded" required>
+                        <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="categoryId" name="categoryId" value={formData.categoryId} onChange={handleChange} className="w-full border p-2 rounded" required>
                             <option value="">Select Category</option>
                             {categories.map(c => (
                                 <option key={c.id} value={c.id}>{c.name}</option>

@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('Admin can log in, access the admin panel, and create a product', async ({ page }) => {
 
+    // Generate a unique name for this specific test run
+    const uniqueProductName = `Playwright Test Product ${Date.now()}`;
+
     // Log in as an Admin
     await page.goto('/');
     await page.getByRole('link', { name: /login/i }).click();
@@ -15,7 +18,7 @@ test('Admin can log in, access the admin panel, and create a product', async ({ 
 
     // Create a New Product
     await page.getByRole('button', { name: /add new product/i }).click();
-    await page.getByLabel(/name/i).fill('Playwright Test Product');
+    await page.getByLabel(/name/i).fill(uniqueProductName);
     await page.getByLabel(/price/i).fill('99.99');
     await page.getByLabel(/description/i).fill('Created by an automated E2E test');
     await page.getByLabel(/stock/i).fill('100');
@@ -24,6 +27,6 @@ test('Admin can log in, access the admin panel, and create a product', async ({ 
 
     // Verify the Full-Stack loop
     await page.getByRole('link', { name: /home/i }).click();
-    await expect(page.getByText('Playwright Test Product')).toBeVisible();
+    await expect(page.getByText(uniqueProductName)).toBeVisible();
 
 });

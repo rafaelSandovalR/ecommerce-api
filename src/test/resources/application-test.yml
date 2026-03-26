@@ -28,3 +28,5 @@ cloudinary:
 stripe:
   api-key: dummy-stripe-key
   webhook-secret: dummy-webhook-secret
+
+STRIPE_SECRET_KEY: dummy-stripe-secret-key-12345

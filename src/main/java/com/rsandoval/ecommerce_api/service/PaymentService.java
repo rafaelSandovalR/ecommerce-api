@@ -16,7 +16,7 @@ public class PaymentService {
 
     private final CartService cartService;
 
-    public PaymentService(CartService cartService, @Value("${STRIPE_SECRET_KEY}") String secretKey) {
+    public PaymentService(CartService cartService, @Value("${stripe.secret-key}") String secretKey) {
         this.cartService = cartService;
         Stripe.apiKey = secretKey;
     }

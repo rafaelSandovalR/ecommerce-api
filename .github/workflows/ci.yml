@@ -25,9 +25,6 @@ jobs:
           cache: 'maven'
 
       - name: Run Backend Tests
-        env:
-          JWT_SECRET: dummy_secret_key_for_testing_purposes_only_1234567890
-          JWT_EXPIRATION: 86400000
         run: |
           chmod +x mvnw
           ./mvnw test

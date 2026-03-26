@@ -24,3 +24,7 @@ cloudinary:
   cloud-name: dummy-cloud-name
   api-key: dummy-api-key
   api-secret: dummy-api-secret
+
+stripe:
+  api-key: dummy-stripe-key
+  webhook-secret: dummy-webhook-secret

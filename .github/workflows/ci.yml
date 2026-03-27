@@ -66,6 +66,22 @@ jobs:
   e2e-tests:
     needs: [test-backend, test-frontend]
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: ecommerce_db
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -88,11 +104,17 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright Browsers (Chromium Only)
         working-directory: ./frontend
-        run: npx playwright install --with-deps
+        run: npx playwright install chromium --with-deps
 
       - name: Run Full Stack E2E Tests
+        env:
+          POSTGRES_PASSWORD: password
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/ecommerce_db
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+          SPRING_JPA_HIBERNATE_DDL_AUTO: update
         run: |
           chmod +x mvnw
           ./mvnw spring-boot:run -Dspring-boot.run.profiles=test &
@@ -100,4 +122,4 @@ jobs:
           cd frontend
           npm run dev &
           sleep 5
-          npx playwright test
+          npx playwright test --project=chromium

@@ -110,9 +110,10 @@ jobs:
 
       - name: Run Full Stack E2E Tests
         env:
-          POSTGRES_PASSWORD: password
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/ecommerce_db
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: password
           SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
           SPRING_JPA_HIBERNATE_DDL_AUTO: update
         run: |

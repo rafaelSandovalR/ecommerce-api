@@ -116,6 +116,7 @@ jobs:
           SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
           SPRING_JPA_HIBERNATE_DDL_AUTO: update
         run: |
+          cp src/test/resources/application-test.yml src/main/resources/
           chmod +x mvnw
           ./mvnw spring-boot:run -Dspring-boot.run.profiles=test &
           sleep 15

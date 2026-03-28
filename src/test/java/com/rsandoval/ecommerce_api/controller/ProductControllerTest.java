@@ -113,13 +113,15 @@ public class ProductControllerTest {
     }
 
     private User createAdmin() {
-        User admin = new User();
-        admin.setEmail("admin@test.com");
-        admin.setName("Admin User");
-        admin.setPassword("encryptedMockPassword");
-        admin.setRole(Role.ROLE_ADMIN);
-        userRepository.save(admin);
-        return admin;
+        return userRepository.findByEmail("admin@test.com").orElseGet(() -> {
+            User admin = new User();
+            admin.setEmail("admin@test.com");
+            admin.setName("Admin User");
+            admin.setPassword("encryptedMockPassword");
+            admin.setRole(Role.ROLE_ADMIN);
+            userRepository.save(admin);
+            return admin;
+        });
     }
 
     private Category createCategory(String categoryName) {

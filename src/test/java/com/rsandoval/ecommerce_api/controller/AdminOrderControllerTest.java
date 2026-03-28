@@ -53,12 +53,14 @@ public class AdminOrderControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private User createUser(Role role, String name, String email){
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword("encryptedPassword");
-        user.setRole(role);
-        return userRepository.save(user);
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User user = new User();
+            user.setName(name);
+            user.setEmail(email);
+            user.setPassword("encryptedPassword");
+            user.setRole(role);
+            return userRepository.save(user);
+        });
     }
 
     private String loginUserAndGenerateToken(Role role, String name, String email) {

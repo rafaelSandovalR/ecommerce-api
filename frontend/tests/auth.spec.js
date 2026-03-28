@@ -1,4 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request} from '@playwright/test';
+
+test.beforeAll(async () => {
+    const apiContext = await request.newContext();
+    await apiContext.post('http://localhost:8080/api/auth/register', {
+        data: {
+            name: 'Test User',
+            email: 'test@test.com',
+            password: 'password'
+        }
+    });
+    await apiContext.dispose();
+});
 
 test('User can log in and view authenticated navigation', async ({ page }) => {
     // Navigate to the base URL

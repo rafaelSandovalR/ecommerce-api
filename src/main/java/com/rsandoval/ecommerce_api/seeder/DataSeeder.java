@@ -1,4 +1,4 @@
-package com.rsandoval.ecommerce_api.config;
+package com.rsandoval.ecommerce_api.seeder;
 
 import com.rsandoval.ecommerce_api.model.Category;
 import com.rsandoval.ecommerce_api.model.Product;

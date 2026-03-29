@@ -6,7 +6,7 @@ test.beforeAll(async () => {
         data: {
             name: 'Test User',
             email: 'test@test.com',
-            password: 'password'
+            password: 'password123'
         }
     });
     await apiContext.dispose();

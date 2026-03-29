@@ -30,7 +30,7 @@ public class AdminSeeder implements CommandLineRunner {
             User admin = new User();
             admin.setName("Admin User");
             admin.setEmail("admin@test.com");
-            admin.setPassword(passwordEncoder.encode("password"));
+            admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(Role.ROLE_ADMIN);
             userRepository.save(admin);
             System.out.println("E2E Test Admin User successfully seeded.");

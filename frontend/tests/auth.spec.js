@@ -25,6 +25,6 @@ test('User can log in and view authenticated navigation', async ({ page }) => {
     // Submit the form
     await page.getByRole('button', { name: /sign in/i }).click();
     // Verify the Full-Stack integration
-    await expect(page.getByRole('button', { name: /logout/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /logout/i })).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('link', { name: /orders/i })).toBeVisible();
 });

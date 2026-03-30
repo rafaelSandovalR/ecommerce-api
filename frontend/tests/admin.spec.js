@@ -22,7 +22,7 @@ test('Admin can log in, access the admin panel, and create a product', async ({ 
     await page.getByLabel(/price/i).fill('99.99');
     await page.getByLabel(/description/i).fill('Created by an automated E2E test');
     await page.getByLabel(/stock/i).fill('100');
-    await page.getByLabel(/category/i).selectOption({ label: 'Tech' });
+    await page.getByLabel(/category/i).selectOption({ label: 'Admin Category' });
     await page.getByRole('button', { name: /save|create|submit/i }).click();
 
     // Verify the Full-Stack loop

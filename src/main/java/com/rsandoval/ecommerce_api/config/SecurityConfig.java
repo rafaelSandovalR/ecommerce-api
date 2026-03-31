@@ -71,15 +71,14 @@ public class SecurityConfig {
     }
 
     // Grabs environment variable, but defaults to localhost
-    @Value("${frontend.url:http://localhost:5173}")
+    @Value("${frontend.url}")
     private String frontendUrl;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Add both the live URL and local Vite URL to the whitelist
-        configuration.setAllowedOrigins(List.of(frontendUrl, "http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

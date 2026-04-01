@@ -43,6 +43,17 @@ export default function Checkout() {
         initData();
     }, []);
 
+    useEffect(() => {
+        // Only start the redirect IF fetching is completely finished
+        if (!loading && (!cart || !cart.items || cart.items.length === 0)) {
+            const timer = setTimeout(() => {
+                navigate("/");
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [cart, loading, navigate]);
+
     // Called ONLY after Stripe confims payment is successful
     const handleOrderFinalization = async (paymentId) => {
         try {

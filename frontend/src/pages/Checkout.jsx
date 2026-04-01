@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CheckoutForm from "../components/CheckoutForm";
+import { useCart } from '../context/CartContext';
 
 const stripePromise = loadStripe("pk_test_51SxWYs7nCDsNfVCbhsiTLt7T5BgynkGR0Ni7tZ8MQEBzga3wfyxe6WP2CUTdLTYRiy6R5mwLzg49NVg5ia9wZBXc00MAGHt79u");
 
@@ -22,6 +23,7 @@ export default function Checkout() {
     const [zip, setZip] = useState("");
 
     const navigate = useNavigate();
+    const { refreshCart } = useCart();
 
     useEffect(() => {
         const initData = async () => {
@@ -59,6 +61,7 @@ export default function Checkout() {
         try {
             const fullAddress = `${address}, ${city}, ${zip}`
             await placeOrderAPI(fullAddress);
+            await refreshCart();
             navigate("/order-success");
         } catch (err) {
             alert("Payment received, but order creation failed: " + err.message);

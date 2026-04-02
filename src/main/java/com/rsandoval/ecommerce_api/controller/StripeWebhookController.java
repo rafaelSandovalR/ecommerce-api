@@ -48,6 +48,8 @@ public class StripeWebhookController {
                     Long userId = Long.parseLong(userIdString);
                     System.out.println("Webhook received. Successful payment for User ID: " + userId);
                     orderService.placeOrderFromWebhook(userId, "Address pending...");
+                } else {
+                    System.out.println("Webhook received, but no userId metadata was found.");
                 }
             });
         }

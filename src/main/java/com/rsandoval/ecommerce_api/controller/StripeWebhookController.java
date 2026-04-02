@@ -1,6 +1,7 @@
 package com.rsandoval.ecommerce_api.controller;
 
 import com.rsandoval.ecommerce_api.service.OrderService;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
@@ -26,34 +27,53 @@ public class StripeWebhookController {
     @PostMapping("/stripe")
     public ResponseEntity<String> handleStripeWebhook(
             @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
+            @RequestHeader("Stripe-Signature") String sigHeader) throws EventDataObjectDeserializationException {
+
+        System.out.println("========== INCOMING STRIPE WEBHOOK ==========");
 
         Event event;
         try {
-            // Verify this actually came from Stripe
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+            System.out.println("Signature verified successfully.");
         } catch (SignatureVerificationException e) {
-            System.out.println("Webhook signature verification failed");
+            System.out.println("Webhook signature verification failed.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
 
-        // Check if the event is a successful payment
+        System.out.println("Event Type: " + event.getType());
+
         if ("payment_intent.succeeded".equals(event.getType())) {
 
-            event.getDataObjectDeserializer().getObject().ifPresent(stripeObject -> {
-                PaymentIntent intent = (PaymentIntent) stripeObject;
-                String userIdString = intent.getMetadata().get("userId");
+            PaymentIntent intent;
 
-                if (userIdString != null) {
-                    Long userId = Long.parseLong(userIdString);
-                    System.out.println("Webhook received. Successful payment for User ID: " + userId);
+            // Handle the API version mismatch gracefully
+            if (event.getDataObjectDeserializer().getObject().isPresent()) {
+                intent = (PaymentIntent) event.getDataObjectDeserializer().getObject().get();
+                System.out.println("Object deserialized safely.");
+            } else {
+                System.out.println("Version mismatch detected! Falling back to unsafe deserialization.");
+                intent = (PaymentIntent) event.getDataObjectDeserializer().deserializeUnsafe();
+            }
+
+            String userIdString = intent.getMetadata().get("userId");
+
+            if (userIdString != null) {
+                Long userId = Long.parseLong(userIdString);
+                System.out.println("Success! Extracted User ID: " + userId);
+
+                try {
                     orderService.placeOrderFromWebhook(userId, "Address pending...");
-                } else {
-                    System.out.println("Webhook received, but no userId metadata was found.");
+                    System.out.println("Order successfully placed in database.");
+                } catch (Exception e) {
+                    // If the database fails (e.g. user not found), we will see it here!
+                    System.out.println("CRITICAL ERROR placing order: " + e.getMessage());
                 }
-            });
+            } else {
+                System.out.println("Webhook received, but NO userId metadata was found on the PaymentIntent.");
+            }
         }
-        // Always return a 200 OK quickly so Stripe knows we received it
+
+        System.out.println("========== WEBHOOK PROCESSING COMPLETE ==========");
         return ResponseEntity.ok("Webhook processed successfully");
     }
 }

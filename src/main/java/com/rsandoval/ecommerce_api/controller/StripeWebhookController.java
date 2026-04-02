@@ -47,7 +47,7 @@ public class StripeWebhookController {
                 if (userIdString != null) {
                     Long userId = Long.parseLong(userIdString);
                     System.out.println("Webhook received. Successful payment for User ID: " + userId);
-                    // TODO: orderService.placeOrderFromWebhook(userId, "Address pending...");
+                    orderService.placeOrderFromWebhook(userId, "Address pending...");
                 }
             });
         }

@@ -1,7 +1,16 @@
 import { Link } from "react-router-dom";
+import { useEffect } from 'react';
+import { useCart } from '../context/CartContext'
+
 import Navbar from "../components/Navbar";
 
 export default function OrderSuccess() {
+    const { refreshCart } = useCart();
+    
+    useEffect(() => {
+        refreshCart();
+    }, [refreshCart]);
+    
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />

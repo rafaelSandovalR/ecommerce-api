@@ -7,28 +7,38 @@ import Navbar from "../components/Navbar";
 export default function OrderSuccess() {
     const { refreshCart } = useCart();
     const [isVerifying, setIsVerifying] = useState(true);
-    
+
+    // TODO: Consider swapping this for WebSockets solution
     useEffect(() => {
+        let attempts = 0;
 
-        const syncTimer = setTimeout(async () => {
-            await refreshCart();
-            setIsVerifying(false);
-        }, 3000);
+        const interval = setInterval(async () => {
+            attempts++;
+            const updatedCart = await refreshCart();
 
-        return () => clearTimeout(syncTimer);
+            if (updatedCart?.items.length === 0 || attempts >= 10) {
+                clearInterval(interval);
+                setIsVerifying(false);
+            }
+        }, 1000);
+
+        // Cleanup interval if the user navigates away before it finishes
+        return () => clearInterval(interval);
     }, [refreshCart]);
-    
+
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
 
-            {isVerifying ? (
-                <div>
-                    <h2 className="text-gray-600 mb-8">Verifying your payment...</h2>
-                </div>
+            <div className="max-w-2xl mx-auto p-8 mt-10 bg-white rounded-3xl shadow-md text-center">
+                {isVerifying ? (
+                    <div>
+                        <h2 className="text-2xl font-semibold mb-4">Verifying your payment...</h2>
+                        <p className="text-gray-600">Please wait while we confirm your order details.</p>
+                    </div>
 
-            ) : (
-                <div className="max-w-2xl mx-auto p-8 mt-10 bg-white rounded-3xl shadow-md text-center">
+                ) : (
+                <div>
                     <h1 className="text-3xl font-bold text-green-600 mb-4">Order Placed Successfully!</h1>
                     <p className="text-gray-600 mb-8">
                         Thank you for your purchase. Your items will be shipped to the address provided.
@@ -38,7 +48,7 @@ export default function OrderSuccess() {
                     </Link>
                 </div>
             )};
-
+            </div>
         </div>
     );
 }

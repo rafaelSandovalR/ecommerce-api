@@ -16,15 +16,17 @@ export const CartProvider = ({ children }) => {
             setCart(null);
             setError(null);
             setLoading(false);
-            return;
+            return null;
         }
 
         try{
             const data = await fetchCartAPI();
             setCart(data);
             setError(null);
+            return data;
         } catch (err) {
             setError(err.message);
+            return null;
         } finally {
             setLoading(false);
         }

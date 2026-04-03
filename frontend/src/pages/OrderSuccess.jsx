@@ -1,28 +1,44 @@
 import { Link } from "react-router-dom";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext'
 
 import Navbar from "../components/Navbar";
 
 export default function OrderSuccess() {
     const { refreshCart } = useCart();
+    const [isVerifying, setIsVerifying] = useState(true);
     
     useEffect(() => {
-        refreshCart();
+
+        const syncTimer = setTimeout(async () => {
+            await refreshCart();
+            setIsVerifying(false);
+        }, 3000);
+
+        return () => clearTimeout(syncTimer);
     }, [refreshCart]);
     
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
-            <div className="max-w-2xl mx-auto p-8 mt-10 bg-white rounded-3xl shadow-md text-center">
-                <h1 className="text-3xl font-bold text-green-600 mb-4">Order Placed Successfully!</h1>
-                <p className="text-gray-600 mb-8">
-                    Thank you for your purchase. Your items will be shipped to the address provided.
-                </p>
-                <Link to="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-                    Continue Shopping
-                </Link>
-            </div>
+
+            {isVerifying ? (
+                <div>
+                    <h2 className="text-gray-600 mb-8">Verifying your payment...</h2>
+                </div>
+
+            ) : (
+                <div className="max-w-2xl mx-auto p-8 mt-10 bg-white rounded-3xl shadow-md text-center">
+                    <h1 className="text-3xl font-bold text-green-600 mb-4">Order Placed Successfully!</h1>
+                    <p className="text-gray-600 mb-8">
+                        Thank you for your purchase. Your items will be shipped to the address provided.
+                    </p>
+                    <Link to="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                        Continue Shopping
+                    </Link>
+                </div>
+            )};
+
         </div>
     );
 }

@@ -125,7 +125,7 @@ export default function Checkout() {
                                     className="w-full p-2 border rounded"
                                     placeholder="New York"
                                     value={state}
-                                    onChange={(e) => setCity(e.target.value)}
+                                    onChange={(e) => setState(e.target.value)}
                                 />
                             </div>
                             <div>
@@ -151,6 +151,7 @@ export default function Checkout() {
                                     onSuccess={handleOrderFinalization}
                                     address={address}
                                     city={city}
+                                    state={state}
                                     zip={zip}
                                     name={name}
                                 />

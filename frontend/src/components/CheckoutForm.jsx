@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { apiRequest } from "../services/api";
 
-export default function CheckoutForm({ onSuccess, address, city, zip, name }) {
+export default function CheckoutForm({ onSuccess, address, city, state, zip, name }) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -30,6 +30,7 @@ export default function CheckoutForm({ onSuccess, address, city, zip, name }) {
                     address: {
                         line1: address,
                         city: city,
+                        state: state,
                         postal_code: zip,
                         country: "US"
                     },
@@ -44,7 +45,7 @@ export default function CheckoutForm({ onSuccess, address, city, zip, name }) {
             setLoading(false);
         } else if (paymentIntent && paymentIntent.status === "succeeded") {
             // Payment Success, now place the order in backend
-            onSuccess(paymentIntent.id);
+            onSuccess();
         } else {
             setMessage("Unexpected state.");
             setLoading(false);

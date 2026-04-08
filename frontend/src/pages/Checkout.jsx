@@ -21,6 +21,7 @@ export default function Checkout() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
+    const [state, setState] = useState("");
     const [zip, setZip] = useState("");
 
     const navigate = useNavigate();
@@ -58,15 +59,8 @@ export default function Checkout() {
     }, [cart, loading, navigate]);
 
     // Called ONLY after Stripe confims payment is successful
-    const handleOrderFinalization = async (paymentId) => {
-        try {
-            const fullAddress = `${address}, ${city}, ${zip}`
-            await placeOrderAPI(fullAddress);
-            await refreshCart();
-            navigate("/order-success");
-        } catch (err) {
-            alert("Payment received, but order creation failed: " + err.message);
-        }
+    const handleOrderFinalization = async () => {
+        navigate("/order-success");
     };
 
     if (loading) return <div className="text-center mt-20">Loading...</div>;
@@ -88,7 +82,7 @@ export default function Checkout() {
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <h2 className="text-xl font-bold mb-4">Shipping Information</h2>
 
-                        <div>
+                        <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
                             <input
                                 type="text"
@@ -111,15 +105,26 @@ export default function Checkout() {
                             />
                         </div>
 
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
+                            <input
+                                type="text"
+                                required
+                                className="w-full p-2 border rounded"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                            />
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">City</label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2">State</label>
                                 <input
                                     type="text"
                                     required
                                     className="w-full p-2 border rounded"
                                     placeholder="New York"
-                                    value={city}
+                                    value={state}
                                     onChange={(e) => setCity(e.target.value)}
                                 />
                             </div>

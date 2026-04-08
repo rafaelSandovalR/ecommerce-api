@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { apiRequest } from "../services/api";
 
-export default function CheckoutForm({ onSuccess, address }) {
+export default function CheckoutForm({ onSuccess, address, city, zip, name }) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -26,6 +26,15 @@ export default function CheckoutForm({ onSuccess, address }) {
             elements,
             confirmParams: {
                 return_url: window.location.origin + "/order-success",
+                shipping: {
+                    address: {
+                        line1: address,
+                        city: city,
+                        postal_code: zip,
+                        country: "US"
+                    },
+                    name: name,
+                }
             },
             redirect: "if_required",
         });

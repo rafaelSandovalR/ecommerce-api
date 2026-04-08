@@ -18,6 +18,7 @@ export default function Checkout() {
     const [clientSecret, setClientSecret] = useState("");
 
     // Form State
+    const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [zip, setZip] = useState("");
@@ -87,6 +88,17 @@ export default function Checkout() {
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <h2 className="text-xl font-bold mb-4">Shipping Information</h2>
 
+                        <div>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                            <input
+                                type="text"
+                                required
+                                className="w-full p-2 border rounded"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </div>
+
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Address</label>
                             <input
@@ -133,6 +145,9 @@ export default function Checkout() {
                                 <CheckoutForm
                                     onSuccess={handleOrderFinalization}
                                     address={address}
+                                    city={city}
+                                    zip={zip}
+                                    name={name}
                                 />
                             </Elements>
                         ) : (

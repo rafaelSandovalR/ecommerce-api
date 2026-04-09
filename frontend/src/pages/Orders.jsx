@@ -66,7 +66,7 @@ export default function Orders() {
                                         {order.items.map((item, index) => (
                                             <li key={index} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
                                                 <span>{item.productName} 
-                                                    <span className="text-gray-400">x {item.quantity} (${Number(item.pricePerUnit).toFixed(2)} ea.)</span>
+                                                    <span className="text-gray-400 ml-1">(${Number(item.pricePerUnit).toFixed(2)} ea.) x {item.quantity}</span>
                                                 </span>
                                                 <span>${Number(item.totalLinePrice).toFixed(2)}</span>
                                             </li>

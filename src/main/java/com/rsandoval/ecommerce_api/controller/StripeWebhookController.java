@@ -45,11 +45,15 @@ public class StripeWebhookController {
             event.getDataObjectDeserializer().getObject().ifPresent(stripeObject -> {
                 PaymentIntent intent = (PaymentIntent) stripeObject;
                 String userIdString = intent.getMetadata().get("userId");
+                String addressLine = intent.getShipping().getAddress().getLine1();
+                String city = intent.getShipping().getAddress().getCity();
+                String zip = intent.getShipping().getAddress().getPostalCode();
+                String fullAddress = addressLine + ", " + city + ", " + zip;
 
                 if (userIdString != null) {
                     Long userId = Long.parseLong(userIdString);
                     System.out.println("Webhook received. Successful payment for User ID: " + userId);
-                    orderService.placeOrderFromWebhook(userId, "Address pending...");
+                    orderService.placeOrderFromWebhook(userId, fullAddress);
                 } else {
                     System.out.println("Webhook received, but no userId metadata was found.");
                 }

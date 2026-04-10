@@ -57,7 +57,7 @@ export default function Cart() {
 
                             {/* Price */}
                             <div className="col-span-2 text-center text-gray-600">
-                                ${item.price}
+                                ${Number(item.price).toFixed(2)}
                             </div>
 
                             {/* Quantity Controls */}

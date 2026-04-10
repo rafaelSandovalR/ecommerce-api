@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback} from "react";
+import { toast } from "react-hot-toast";
 import { addToCartAPI, clearCartAPI, fetchCartAPI, removeFromCartAPI, updateCartItemAPI} from "../services/cartService";
 import { useAuth } from "./AuthContext";
 
@@ -41,6 +42,7 @@ export const CartProvider = ({ children }) => {
             await addToCartAPI(productId, quantity);
             await refreshCart();
         } catch (error) {
+            toast.error(error.message);
             throw error; // For button handling in product page
         }
     };
@@ -51,8 +53,9 @@ export const CartProvider = ({ children }) => {
         try {
             await removeFromCartAPI(itemId);
             await refreshCart();
+            toast.success("Item removed");
         } catch (error) {
-            alert("Failed to remove from cart" + error.message);
+            toast.error("Failed to remove from cart" + error.message);
         }
     };
 
@@ -63,7 +66,7 @@ export const CartProvider = ({ children }) => {
             await updateCartItemAPI(itemId, quantity);
             await refreshCart();
         } catch (error) {
-            alert("Failed to update: " + error.message);
+            toast.error("Failed to update: " + error.message);
         }
     };
 
@@ -72,7 +75,7 @@ export const CartProvider = ({ children }) => {
             await clearCartAPI();
             await refreshCart();
         } catch (error) {
-            alert("Failed to clear cart: " + error.message);
+            toast.error("Failed to clear cart: " + error.message);
         }
     };
 

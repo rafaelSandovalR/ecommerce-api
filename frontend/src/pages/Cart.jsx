@@ -63,8 +63,9 @@ export default function Cart() {
                             {/* Quantity Controls */}
                             <div className="col-span-2 flex text-center justify-center gap-4">
                                 <button
+                                    disabled={item.quantity === 1}
                                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                                    className="w-7 h-7 bg-gray-200 rounded hover:bg-gray-300 font-bold"
+                                    className="w-7 h-7 bg-gray-200 rounded hover:bg-gray-300 font-bold disabled:opacity-25 disabled:cursor-not-allowed transition-colors "
                                 >-</button>
                                 <div className="text-gray-800 font-medium">
                                     {item.quantity}

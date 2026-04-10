@@ -3,6 +3,7 @@ import { fetchAllProductsAPI, fetchCategoriesAPI } from "../services/productServ
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-hot-toast";
 import Navbar from "../components/Navbar";
 
 
@@ -74,7 +75,7 @@ export default function Home() {
 
   const handleAddToCart = async (productId) => {
     if (!user) {
-      alert("Please login to add items to your cart.");
+      toast.error("Please login to add items to your cart.");
       navigate("/login");
       return;
     }
@@ -82,10 +83,8 @@ export default function Home() {
     setAddingId(productId); // Show loading state on the specific button
     try {
       await addToCart(productId, 1);
-      alert("Item added to cart!");
     } catch (err) {
       console.error(err);
-      alert("Error adding item: " + err.message);
     } finally {
       setAddingId(null);
     }

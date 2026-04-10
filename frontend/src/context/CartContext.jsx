@@ -41,6 +41,7 @@ export const CartProvider = ({ children }) => {
         try {
             await addToCartAPI(productId, quantity);
             await refreshCart();
+            toast.success("Item added to cart")
         } catch (error) {
             toast.error(error.message);
             throw error; // For button handling in product page

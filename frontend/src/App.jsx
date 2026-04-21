@@ -9,6 +9,8 @@ import Orders from "./pages/Orders";
 import OrderSuccess from "./pages/OrderSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
         {/* Public Routes */}
         <Route path="/register" element={<Register />}/>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<Home />}/>
 
         {/* User Protected Routes */}

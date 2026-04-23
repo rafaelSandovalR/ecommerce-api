@@ -59,7 +59,7 @@ export default function ResetPassword() {
                     {message} Redirecting to login...
                 </div>
             ) : (
-                <form>
+                <form onSubmit={handleSubmit}>
                     {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
                     <div className="mb-4">
                         <label className="block text-gray-700 font-bold mb-2">Set New Password</label>

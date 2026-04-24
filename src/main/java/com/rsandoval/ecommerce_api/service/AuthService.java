@@ -87,7 +87,7 @@ public class AuthService {
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid or missing token"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid or missing token. Please request a new password reset."));
 
         if (resetToken.isExpired()) {
             tokenRepository.delete(resetToken);

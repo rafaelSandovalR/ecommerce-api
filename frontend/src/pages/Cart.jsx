@@ -91,7 +91,7 @@ export default function Cart() {
                     {/* Cart Footer / Total */}
                     <div className="p-6 bg-gray-50 flex justify-between items-center">
                         <div className="text-xl font-bold text-gray-800">
-                            Total: <span className="text-blue-600">${cart.totalPrice}</span>
+                            Total: <span className="text-blue-600">${Number(cart.totalPrice).toFixed(2)}</span>
                         </div>
 
                         <Link 

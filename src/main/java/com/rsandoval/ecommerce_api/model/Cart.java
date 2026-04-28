@@ -25,6 +25,7 @@ public class Cart {
     // A Cart has many Items
     // orphanRemoval: If I remove an item from this list, delete it from the DB
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<CartItem> items = new ArrayList<>();
 
     // Store total price to avoid recalculation

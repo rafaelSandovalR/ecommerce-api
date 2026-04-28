@@ -26,6 +26,7 @@ export default function Checkout() {
 
     const navigate = useNavigate();
     const { refreshCart } = useCart();
+    const { totalItems } = useCart();
 
     useEffect(() => {
         const initData = async () => {
@@ -165,17 +166,18 @@ export default function Checkout() {
                     <div className="bg-white p-6 rounded-lg shadow-md h-fit">
                         <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
-                        <div className="space-y-2 mb-4">
+                        <div className="space-y-3 mb-4">
                             {cart.items.map(item => (
-                                <div key={item.id} className="flex justify-between text-sm">
-                                    <span>{item.productName} (x{item.quantity})</span>
+                                <div key={item.id} className="flex justify-between text-md">
+                                    <span className="absolute bg-blue-500 text-white text-[14px] font-medium px-2 py-0.5 rounded-full">{item.quantity}</span>
+                                    <span className="pl-10">{item.productName}</span>
                                     <span>${Number(item.price * item.quantity).toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
 
                         <div className="border-t pt-4 flex justify-between font-bold text-lg">
-                            <span>Total</span>
+                            <span>Total:<span className="font-normal pl-2">{totalItems} items</span></span>
                             <span>${Number(cart.totalPrice).toFixed(2)}</span>
                         </div>
                     </div>

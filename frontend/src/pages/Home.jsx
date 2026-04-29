@@ -139,7 +139,21 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2 text-gray-700">Price Range</h4>
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="font-semibold mb-2 text-gray-700">Price Range</h4>
+                {(minPrice || maxPrice) && (
+                  <button
+                    onClick={() => {
+                      setMinPrice("");
+                      setMaxPrice("");
+                    }}
+                    className="text-xs text-blue-600 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              
               <div className="flex gap-2">
                 <input
                   type="number"

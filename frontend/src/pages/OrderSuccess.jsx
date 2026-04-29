@@ -16,11 +16,15 @@ export default function OrderSuccess() {
             attempts++;
             const updatedCart = await refreshCart();
 
-            if (updatedCart?.items.length === 0 || attempts >= 10) {
+            if (updatedCart?.items.length === 0) {
                 clearInterval(interval);
                 setIsVerifying(false);
+            } else if (attempts >= 10) {
+                clearInterval(interval);
+                // TODO: Set error state here
+                setIsVerifying(false);
             }
-        }, 1000);
+        }, 3000);
 
         // Cleanup interval if the user navigates away before it finishes
         return () => clearInterval(interval);

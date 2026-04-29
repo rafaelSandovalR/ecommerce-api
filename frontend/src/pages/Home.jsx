@@ -158,16 +158,28 @@ export default function Home() {
                 <input
                   type="number"
                   placeholder="Min"
-                  className="w-1/2 p-2 border rounded focus:outline-blue-500"
+                  min="0"
+                  className="w-1/2 p-2 border rounded focus:outline-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "" || parseFloat(val) >= 0) {
+                      setMinPrice(val);
+                    }
+                  }}
                 />
                 <input
                   type="number"
                   placeholder="Max"
-                  className="w-1/2 p-2 border rounded focus:outline-blue-500"
+                  min="0"
+                  className="w-1/2 p-2 border rounded focus:outline-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "" || parseFloat(val) >= 0) {
+                      setMaxPrice(val);
+                    }
+                  }}
                 />
               </div>
             </div>

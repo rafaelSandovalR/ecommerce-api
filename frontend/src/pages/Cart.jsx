@@ -38,21 +38,21 @@ export default function Cart() {
 
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     {/* Table Header */}
-                    <div className="grid grid-cols-12 bg-gray-50 p-4 border-b text-gray-600 font-medium text-sm">
-                        <div className="col-span-6">Product</div>
+                    <div className="grid grid-cols-12 bg-gray-50 py-4 px-8 border-b text-gray-600 font-medium text-sm">
+                        <div className="col-span-4">Product</div>
                         <div className="col-span-2 text-center">Price</div>
                         <div className="col-span-2 text-center">Quantity</div>
+                        <div className="col-span-2 text-center">Subtotal</div>
                         <div className="col-span-2 text-right">Actions</div>
                     </div>
 
                     {/* Cart Items Loop */}
                     {cart.items.map((item) => (
-                        <div key={item.id} className="grid grid-cols-12 p-4 border-b items-center hover:bg-gray-50">
+                        <div key={item.id} className="grid grid-cols-12 py-4 px-8 border-b items-center hover:bg-gray-50">
 
                             {/* Product Info */}
-                            <div className="col-span-6">
+                            <div className="col-span-4">
                                 <h3 className="font-bold text-gray-800">{item.productName}</h3>
-                                {/* Note: Ensure your Backend DTO returns 'productName', otherwise use item.product.name */}
                             </div>
 
                             {/* Price */}
@@ -76,6 +76,10 @@ export default function Cart() {
                                 >+</button>
                             </div>
 
+                            <div className="col-span-2 text-center text-gray-600">
+                                {Number(item.subtotal).toFixed(2)}
+                            </div>
+
                             {/* Actions */}
                             <div className="col-span-2 text-right">
                                 <button
@@ -89,7 +93,7 @@ export default function Cart() {
                     ))}
 
                     {/* Cart Footer / Total */}
-                    <div className="p-6 bg-gray-50 flex justify-between items-center">
+                    <div className="py-6 px-8 bg-gray-50 flex justify-between items-center">
                         <div className="text-xl font-bold text-gray-800">
                             Total: <span className="text-blue-600">${Number(cart.totalPrice).toFixed(2)}</span>
                         </div>

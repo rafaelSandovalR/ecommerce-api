@@ -257,6 +257,7 @@ export default function Home() {
                   setSelectedCategory(null);
                   setMinPrice("");
                   setMaxPrice("");
+                  navigate("/");
                 }}
                 className="mt-4 text-blue-600 hover:underline"
                 >

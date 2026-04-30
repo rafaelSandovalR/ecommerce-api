@@ -39,6 +39,7 @@ public class CartMapper {
         BigDecimal subTotal = item.getPrice()
                 .multiply(BigDecimal.valueOf(item.getQuantity()));
 
+        dto.setSubtotal(subTotal);
         return dto;
     }
 }

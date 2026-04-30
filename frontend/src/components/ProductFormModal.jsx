@@ -76,7 +76,15 @@ export default function ProductFormModal({ onClose, onSubmit, initialData }) {
                 <h2 className="text-xl font-bold mb-4">
                     {initialData ? "Edit Product" : " Add New Product"}
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form 
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     {/* Name */}
                     <div>
                         <label htmlFor="productName" className="block text-sm font-medium text-gray-700">Name</label>

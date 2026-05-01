@@ -52,34 +52,41 @@ export default function Orders() {
                                         </span>
                                     </div>
                                     <div className="text-right">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
+                                        <span className={`mr-2 px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
                                             {order.status}
                                         </span>
                                         <span className="px-3 block font-bold text-gray-800 mt-1">${Number(order.totalPrice).toFixed(2)}</span>
                                     </div>   
                                 </div>
-
-                                {/* Order Item */}
-                                <div className="p-4">
-                                    <h4 className="px-3 text-sm font-bold text-gray-500 mb-2">Items</h4>
-                                    <ul className="space-y-2 px-3">
-                                        {order.items.map((item, index) => (
-                                            <li key={index} className="flex justify-between text-sm text-gray-700 border-b border-gray-100 pb-2 last:border-0">
-                                                <span>{item.productName} 
-                                                    <span className="text-gray-400 ml-1">(${Number(item.pricePerUnit).toFixed(2)} ea.) x {item.quantity}</span>
-                                                </span>
-                                                <span>${Number(item.totalLinePrice).toFixed(2)}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    {/* Shipping Address Display */}
-                                    <div className="px-3 mt-4 pt-4 border-t text-sm text-gray-500">
-                                        <span className="font-bold">Shipped to: </span> {order.shippingAddress}
+                                
+                                <div className="py-4 px-10">
+                                    {/* Grid Header */}
+                                    <div className="grid grid-cols-10 py-2 border-b text-gray-500 font-bold text-sm">
+                                        <div className="col-span-4">Items</div>
+                                        <div className="col-span-2 text-right">Qty</div>
+                                        <div className="col-span-2 ml-8">Price/Unit</div>
+                                        <div className="col-span-2 text-right">Subtotal</div>
                                     </div>
 
+                                    <div className="flex flex-col">
+                                        {order.items.map((item) => (
+                                            <div 
+                                                key={item.productId} 
+                                                className="grid grid-cols-10 py-4 border-b border-gray-100 items-center text-sm text-gray-700 last:border-b-0"
+                                            >
+                                                <span className="col-span-4">{item.productName}</span>
+                                                <span className="col-span-2 text-right">{item.quantity}</span>
+                                                <span className="col-span-2 ml-8">${Number(item.pricePerUnit).toFixed(2)}</span>
+                                                <span className="col-span-2 text-right">${Number(item.totalLinePrice).toFixed(2)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                                 
+                                {/* Shipping Address Display */}
+                                <div className="p-7 text-sm text-gray-500 border-t">
+                                    <span className="font-bold">Shipped to: </span> {order.shippingAddress}
+                                </div>
                             </div>
                         ))}
                     </div>    

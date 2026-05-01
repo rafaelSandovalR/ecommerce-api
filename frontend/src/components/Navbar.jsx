@@ -37,11 +37,11 @@ export default function Navbar() {
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="flex-1 max-w-lg mx-6">
 
-                <div className="flex items-center w-full border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                <div className="flex items-center w-full rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
                     <input
                         type="text"
                         placeholder="Search products..."
-                        className="w-full px-4 py-2 outline-none border-none"
+                        className="w-full px-4 py-2 shadow-[inset_0_4px_4px_-2px_rgba(0,0,0,0.1),inset_0_-4px_4px_-2px_rgba(0,0,0,0.05),inset_4px_0_4px_-2px_rgba(0,0,0,0.05)]"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

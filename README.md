@@ -20,6 +20,12 @@ Experience the fully functional, cloud-hosted platform here:
 * **The Webhook Race Condition**: Bypassed the common flaw of relying on a React frontend to confirm payments. Created a dedicated Spring Boot webhook controller that securely listens for Stripe events (`payment_intent.succeeded`) and builds the order in the background. Implemented a 10-second pollling mechanism on the frontend to wait for the backend to clear the database cart, preventing "ghost cart" UI bugs.
 * **Global Exception Handling**: Centralized error management using Spring's `@ControllerAdvice` to intercept exceptions (e.g., expired JWTs, invalid tokens) and return clean, standardized JSON responses to the frontend.
 
+## CI/CD & Deployment Pipeline
+
+This project utilizes modern DevOps practices to ensure code reliability and seamless production delivery.
+* **Continuous Integration (CI):** Configured via GitHub Actions. Every push to the main branch automatically triggers an isolated build environment. The pipeline compiles the code and executes the full testing suite—including backend unit/integration tests (JUnit) and frontend end-to-end browser tests (Playwright)—ensuring no regressions are introduced into the master codebase.
+* **Continuous Deployment (CD):** Upon successful completion of all automated tests in the CI phase, the deployment pipeline is triggered. The application is automatically pushed to Render, where the backend is built into a fresh Docker container and the frontend is compiled into optimized static assets.
+
 ## Tech Stack
 * **Frontend**: React (Vite), React Router, Context API, Tailwind CSS
 * **Backend**: Java 17, Spring Boot 3, Spring Security, Spring Data JPA (Hibernate)

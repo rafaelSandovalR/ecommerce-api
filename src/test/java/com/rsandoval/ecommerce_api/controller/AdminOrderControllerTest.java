@@ -1,14 +1,15 @@
 package com.rsandoval.ecommerce_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import com.rsandoval.ecommerce_api.dto.cart.CartRequest;
-import com.rsandoval.ecommerce_api.dto.order.PlaceOrderRequest;
+import com.rsandoval.ecommerce_api.enums.OrderStatus;
 import com.rsandoval.ecommerce_api.enums.Role;
 import com.rsandoval.ecommerce_api.model.Category;
+import com.rsandoval.ecommerce_api.model.Order;
+import com.rsandoval.ecommerce_api.model.OrderItem;
 import com.rsandoval.ecommerce_api.model.Product;
 import com.rsandoval.ecommerce_api.model.User;
 import com.rsandoval.ecommerce_api.repository.CategoryRepository;
+import com.rsandoval.ecommerce_api.repository.OrderRepository;
 import com.rsandoval.ecommerce_api.repository.ProductRepository;
 import com.rsandoval.ecommerce_api.repository.UserRepository;
 import com.rsandoval.ecommerce_api.security.JwtUtils;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +51,9 @@ public class AdminOrderControllerTest {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -86,45 +91,37 @@ public class AdminOrderControllerTest {
         return productRepository.save(product);
     }
 
-    private void addToCart(Long productId, Integer qty, String token) throws Exception{
-        CartRequest request = new CartRequest();
-        request.setProductId(productId);
-        request.setQuantity(qty);
-        mockMvc.perform(post("/api/carts/add")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
-    }
+    private Order createOrderDirectlyInDatabase(User user, Product product, int qty) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setShippingAddress("123 Mock Address");
+        order.setStatus(OrderStatus.PAID);
+        order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(qty)));
 
-    private String createOrder(Product product, int qty, String token) throws Exception{
-        addToCart(product.getId(), qty,token);
-        PlaceOrderRequest request = new PlaceOrderRequest("123 Mock Address");
-        return mockMvc.perform(post("/api/orders/place")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+        OrderItem item = new OrderItem();
+        item.setOrder(order);
+        item.setProduct(product);
+        item.setPrice(product.getPrice());
+        item.setQuantity(qty);
+
+        order.setItems(List.of(item));
+
+        return orderRepository.save(order);
     }
 
     @Test
     void testGetAllOrders_AsAdmin_ShouldReturn200OkAndPageOfOrders() throws Exception {
         // ARRANGE
-        String standardTokenA = loginUserAndGenerateToken(Role.ROLE_USER, "Standard User A", "user_A@test.com");
+        User userA = createUser(Role.ROLE_USER, "Standard User A", "user_A@test.com");
         Product product1 = createProduct("Electronics", "Pixel 10 Pro", "899.99", 100);
-        String orderA = createOrder(product1, 2, standardTokenA);
+        Order orderA = createOrderDirectlyInDatabase(userA, product1, 2);
 
-        String standardTokenB = loginUserAndGenerateToken(Role.ROLE_USER, "Standard User B", "user_B@test.com");
+        User userB = createUser(Role.ROLE_USER, "Standard User B", "user_B@test.com");
         Product product2 = createProduct("Books", "Lord of the Rings", "14.99", 50);
-        String orderB = createOrder(product2, 1, standardTokenB);
+        Order orderB = createOrderDirectlyInDatabase(userB, product2, 1);
 
         String adminToken = loginUserAndGenerateToken(Role.ROLE_ADMIN, "Admin User", "admin@test.com");
 
-        int orderA_ExpectedId = JsonPath.read(orderA, "$.id");
-        int orderB_ExpectedId = JsonPath.read(orderB, "$.id");
         // ACT & ASSERT
         mockMvc.perform(get("/api/admin/orders")
                         .header("Authorization", "Bearer " + adminToken))
@@ -132,27 +129,26 @@ public class AdminOrderControllerTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.totalElements").value(2))
                 // Second order is expected to be first due to Pageable default sort & direction
-                .andExpect(jsonPath("$.content[0].userEmail").value(jwtUtils.extractUsername(standardTokenB)))
-                .andExpect(jsonPath("$.content[0].id").value(orderB_ExpectedId))
-                .andExpect(jsonPath("$.content[1].userEmail").value(jwtUtils.extractUsername(standardTokenA)))
-                .andExpect(jsonPath("$.content[1].id").value(orderA_ExpectedId));
+                .andExpect(jsonPath("$.content[0].userEmail").value(userB.getEmail()))
+                .andExpect(jsonPath("$.content[0].id").value(orderB.getId()))
+                .andExpect(jsonPath("$.content[1].userEmail").value(userA.getEmail()))
+                .andExpect(jsonPath("$.content[1].id").value(orderA.getId()));
     }
 
     @Test
     void testUpdateStatus_AsAdmin_ShouldReturn200OkAndUpdatedOrder() throws Exception {
         // ARRANGE
-        String standardToken = loginUserAndGenerateToken(Role.ROLE_USER, "Standard User", "user@test.com");
+        User user = createUser(Role.ROLE_USER, "Standard User", "user@test.com");
         Product product = createProduct("Gaming", "GTA VI", "69.99", 100);
-        String order = createOrder(product, 3, standardToken);
+        Order order = createOrderDirectlyInDatabase(user, product, 3);
 
-        assertEquals("PAID", JsonPath.read(order, "$.status"));
+        assertEquals(OrderStatus.PAID, order.getStatus());
 
         String adminToken = loginUserAndGenerateToken(Role.ROLE_ADMIN, "Admin User", "admin@test.com");
-        int orderId = JsonPath.read(order, "$.id");
         Map<String, String> requestPayload = Map.of("status", "SHIPPED");
 
         // ACT & ASSERT
-        mockMvc.perform(put("/api/admin/orders/" + orderId + "/status")
+        mockMvc.perform(put("/api/admin/orders/" + order.getId() + "/status")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestPayload)))

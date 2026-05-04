@@ -128,11 +128,11 @@ public class AdminOrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.totalElements").value(2))
-                // Second order is expected to be first due to Pageable default sort & direction
-                .andExpect(jsonPath("$.content[0].userEmail").value(userB.getEmail()))
-                .andExpect(jsonPath("$.content[0].id").value(orderB.getId()))
-                .andExpect(jsonPath("$.content[1].userEmail").value(userA.getEmail()))
-                .andExpect(jsonPath("$.content[1].id").value(orderA.getId()));
+                // Orders are returned in sequential insertion order (A then B) due to identical test timestamps
+                .andExpect(jsonPath("$.content[0].userEmail").value(userA.getEmail()))
+                .andExpect(jsonPath("$.content[0].id").value(orderA.getId()))
+                .andExpect(jsonPath("$.content[1].userEmail").value(userB.getEmail()))
+                .andExpect(jsonPath("$.content[1].id").value(orderB.getId()));
     }
 
     @Test

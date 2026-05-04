@@ -21,14 +21,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/place")
-    public ResponseEntity<OrderResponse> placeOrder( @RequestBody PlaceOrderRequest request) {
-        OrderResponse placedOrder = orderService.placeOrder(request.shippingAddress());
-        return ResponseEntity
-                .created(URI.create("/api/orders/" + placedOrder.getId()))
-                .body(placedOrder);
-    }
-
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getUserOrders(
             @PageableDefault(size = 10, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable

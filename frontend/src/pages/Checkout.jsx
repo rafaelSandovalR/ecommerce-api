@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCartAPI } from "../services/cartService";
-import { placeOrderAPI } from "../services/orderService";
 import { createPaymentIntentAPI } from "../services/paymentService";
 import Navbar from "../components/Navbar";
 import { Elements } from "@stripe/react-stripe-js";

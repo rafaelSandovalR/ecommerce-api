@@ -1,5 +1,7 @@
 package com.rsandoval.ecommerce_api.controller;
 
+import com.rsandoval.ecommerce_api.model.Order;
+import com.rsandoval.ecommerce_api.service.EmailService;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -18,9 +20,11 @@ public class StripeWebhookController {
     private String endpointSecret;
 
     private final OrderService orderService;
+    private final EmailService emailService;
 
-    public StripeWebhookController(OrderService orderService) {
+    public StripeWebhookController(OrderService orderService, EmailService emailService) {
         this.orderService = orderService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/stripe")
@@ -53,7 +57,13 @@ public class StripeWebhookController {
                 if (userIdString != null) {
                     Long userId = Long.parseLong(userIdString);
                     System.out.println("Webhook received. Successful payment for User ID: " + userId);
-                    orderService.placeOrderFromWebhook(userId, fullAddress);
+                    Order savedOrder = orderService.placeOrderFromWebhook(userId, fullAddress);
+
+                    // Trigger background email task
+                    if (savedOrder != null) {
+                        System.out.println("Valid order created. Triggering async email task...");
+                        emailService.sendOrderConfirmationEmail(savedOrder.getUser().getEmail(), savedOrder.getId());
+                    }
                 } else {
                     System.out.println("Webhook received, but no userId metadata was found.");
                 }

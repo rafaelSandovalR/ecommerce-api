@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,5 +34,19 @@ public class EmailService {
 
         mailSender.send(message);
         System.out.println("Password reset email sent successfully to: " + toEmail);
+    }
+
+    @Async
+    public void sendOrderConfirmationEmail(String userEmail, Long orderId) {
+        try {
+            System.out.println("Starting email task on thread: " + Thread.currentThread().getName());
+
+            // TODO: email logic using JavaMailSender
+            Thread.sleep(3000); // 3-second network delay simulation
+
+            System.out.println("Email successfully sent for Order #" + orderId);
+        } catch (Exception e) {
+            System.err.println("Failed to send email: " + e.getMessage());
+        }
     }
 }

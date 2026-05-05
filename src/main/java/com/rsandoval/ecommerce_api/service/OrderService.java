@@ -84,7 +84,7 @@ public class OrderService {
 
     // Asynchronous webhook checkout
     @Transactional
-    public void placeOrderFromWebhook(Long userId, String shippingAddress) {
+    public Order placeOrderFromWebhook(Long userId, String shippingAddress) {
         // Bypass the Auth context, fetch the user and cart directly
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found from webhook"));
@@ -94,17 +94,19 @@ public class OrderService {
 
         if (cart.getItems().isEmpty()) {
             System.out.println("Webhook triggered, but cart is empty. Ignoring.");
-            return;
+            return null;
         }
 
         Order order = createOrderShell(user, LocalDateTime.now(), OrderStatus.PAID, cart.getTotalPrice(), shippingAddress);
-        processOrder(cart, order);
+        Order savedOrder = processOrder(cart, order);
 
         // Clear cart manually
         cart.getItems().clear();
         cart.setTotalPrice(BigDecimal.ZERO);
         cartRepository.save(cart);
         System.out.println("Order Successfully created via Webhook for User ID: " + userId);
+
+        return savedOrder;
     }
 
     public Page<OrderResponse> getUserOrders(Pageable pageable) {

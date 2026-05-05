@@ -14,13 +14,14 @@ Experience the fully functional, cloud-hosted platform here:
 * **Admin Dashboard**: A protected portal for inventory management. Admins can create/edit products, upload images directly to Cloudinary, and update order fulfillment statuses.
 * **Product Catalog**: Dynamic catalog featuring search queries, category filtering, and pagination.
 * **Database-Backed Cart System**: Persistent shopping carts that automatically synchronize with the React frontend and prevent overselling.
-* **Asynchronous Checkout & Webhooks**: Integrated Stripe using a Server-to-Server webhooks architecture to ensure strict data integrity and prevent lost orders upon client disconnects.
+* **Asynchronous Processing & Webhooks**: Integrated Stripe using a Server-to-Server webhooks architecture to ensure strict data integrity. Leveraged Spring `@Async` to offload post-checkout tasks—such as sending order confirmation emails via SMTP—to background thread pools, ensuring non-blocking execution.
 
 ## Architecture & Challenges Overcome
 * **The Webhook Race Condition**: Bypassed the common flaw of relying on a React frontend to confirm payments. Created a dedicated Spring Boot webhook controller that securely listens for Stripe events (`payment_intent.succeeded`) and builds the order in the background. Implemented a 10-second pollling mechanism on the frontend to wait for the backend to clear the database cart, preventing "ghost cart" UI bugs.
 * **Global Exception Handling**: Centralized error management using Spring's `@ControllerAdvice` to intercept exceptions (e.g., expired JWTs, invalid tokens) and return clean, standardized JSON responses to the frontend.
 * **Non-Deterministic Database Sorting (Phantom UI Shifting)**: Encountered bug shifting cart items UI positions when users updated quantities. Discovered PostgreSQL's default behavior returns rows based on "last touched" disk locations when no explicit ordering is specified. Resolved by enforcing strict deterministic sorting (`ORDER BY id ASC`) at the Spring Data JPA Repository layer.
 * **Cryptographic Resets & Enumeration Prevention**: Engineered a secure, time-bound password reset flow using Java's UUID class and Spring Mail (SMTP). To protect user privacy and prevent automated email enumeration attacks, the backend API utilizes "silent returns"—returning a generic success response regardless of whether the email exists in the database, thwarting reconnaissance while securely dispatching cryptographic tokens to valid accounts.
+* **Decoupling Network Calls to Prevent Webhook Timeouts**: Sending an order confirmation email via SMTP requires an external network call that can take several seconds. If executed synchronously within the Stripe Webhook controller, this delay could cause Stripe's servers to time out and aggressively retry the webhook, resulting in duplicate order creations. Resolved this by offloading the `EmailService` to a separate background thread using Spring's `@Async`, allowing the main thread to instantly return a `200 OK` to Stripe while the email processes safely in the background.
 
 ## CI/CD & Deployment Pipeline
 

@@ -37,16 +37,22 @@ public class EmailService {
     }
 
     @Async
-    public void sendOrderConfirmationEmail(String userEmail, Long orderId) {
+    public void sendOrderConfirmationEmail(String toEmail, Long orderId) {
         try {
             System.out.println("Starting email task on thread: " + Thread.currentThread().getName());
 
-            // TODO: email logic using JavaMailSender
-            Thread.sleep(3000); // 3-second network delay simulation
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("Order Confirmation - #" + orderId);
+            message.setText("Thank you for your purchase!\n\n" +
+                    "Your order (#" + orderId + ") has been successfully processed and will be shipped soon.\n\n" +
+                    "Thank you for shopping with us!");
 
+            mailSender.send(message);
             System.out.println("Email successfully sent for Order #" + orderId);
         } catch (Exception e) {
-            System.err.println("Failed to send email: " + e.getMessage());
+            System.err.println("Failed to send order confirmation email: " + e.getMessage());
         }
     }
 }

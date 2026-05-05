@@ -4,6 +4,7 @@ import com.rsandoval.ecommerce_api.dto.order.OrderResponse;
 import com.rsandoval.ecommerce_api.dto.order.PlaceOrderRequest;
 import com.rsandoval.ecommerce_api.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,7 +24,7 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getUserOrders(
-            @PageableDefault(size = 10, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject  @PageableDefault(size = 10, sort = "orderDate", direction = Sort.Direction.DESC) Pageable pageable
             ) {
         return ResponseEntity.ok(orderService.getUserOrders(pageable));
     }

@@ -31,7 +31,7 @@ This project utilizes modern DevOps practices to ensure code reliability and sea
 
 ## Tech Stack
 * **Frontend**: React (Vite), React Router, Context API, Tailwind CSS
-* **Backend**: Java 17, Spring Boot 3, Spring Security, Spring Data JPA (Hibernate)
+* **Backend**: Java 17, Spring Boot 4, Spring Security, Spring Data JPA (Hibernate)
 * **Database**: PostgreSQL
 * **Third-Party Integrations**: Stripe (Payments), Cloudinary (Images), Spring Mail/SMTP (Password Resets)
 * **DevOps & Testing**: Docker, Docker Compose, Render, Github Actions (CI/CD), Playwright (E2E Testing), JUnit

@@ -11,6 +11,14 @@ services:
     volumes:
       - ecommerce_data:/var/lib/postgresql
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
   app:
     build: .
     container_name: ecommerce-api

@@ -20,6 +20,9 @@ FROM nginx:alpine
 # Copy the static files from the Vite 'dist' folder into the Nginx public folder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Replace default Nginx config with custom
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose port 80 (default Nginx port)
 EXPOSE 80
 

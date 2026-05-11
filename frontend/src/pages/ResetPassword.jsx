@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { resetPasswordAPI } from '../services/authService';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function ResetPassword() {
     const [searchParams] = useSearchParams();
@@ -9,6 +10,8 @@ export default function ResetPassword() {
 
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -62,27 +65,41 @@ export default function ResetPassword() {
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && <div className="bg-red-100 text-sm text-red-700 p-3 rounded mb-4">{error}</div>}
-                        <div>
+                        <div className="relative">
                             <label className="block text-gray-600 text-sm font-medium mb-1">Set New Password</label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 required
                                 minLength="6"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-11 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                                {showPassword ? <EyeOff className="w-5 h-8" /> : <Eye className="w-5 h-5" />}
+                            </button>
                         </div>
-                        <div>
+                        <div className="relative">
                             <label className="block text-gray-600 text-sm font-medium mb-1">Confirm New Password</label>
                             <input
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 required
                                 minLength="6"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute inset-y-11 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            >
+                                {showConfirmPassword ? <EyeOff className="w-5 h-8" /> : <Eye className="w-5 h-5" />}
+                            </button>
                         </div>
                         <button
                             type="submit"

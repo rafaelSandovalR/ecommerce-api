@@ -2,6 +2,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { ShoppingCart } from "lucide-react"
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -73,7 +74,7 @@ export default function Navbar() {
                 {user ? (
                     <>
                         <Link to="/cart" className="text-gray-600 hover:text-blue-600 font-medium transition relative">
-                            Cart
+                            <ShoppingCart />
                             {totalItems > 0 && (
                                 <span className="absolute -top-3 -right-4 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                                     {totalItems}

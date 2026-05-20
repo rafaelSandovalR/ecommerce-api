@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"; // For the "Continue Shopping" link
 import { useCart } from "../context/CartContext";
 import Navbar from "../components/Navbar";
+import { Trash2 } from "lucide-react";
 
 export default function Cart() {
     const { cart, loading, error, removeFromCart, updateQuantity } = useCart();
@@ -43,7 +44,7 @@ export default function Cart() {
                         <div className="col-span-2 text-center">Price</div>
                         <div className="col-span-2 text-center">Quantity</div>
                         <div className="col-span-2 text-center">Subtotal</div>
-                        <div className="col-span-2 text-right">Actions</div>
+                        <div className="col-span-2 text-right">Remove</div>
                     </div>
 
                     {/* Cart Items Loop */}
@@ -81,12 +82,12 @@ export default function Cart() {
                             </div>
 
                             {/* Actions */}
-                            <div className="col-span-2 text-right">
+                            <div className="col-span-2 text-right mr-3">
                                 <button
                                     onClick={() => handleRemoveItem(item.id)}
                                     className="text-red-500 hover:text-red-700 text-sm font-medium"
                                 >
-                                    Remove
+                                    <Trash2 />
                                 </button>
                             </div>
                         </div>

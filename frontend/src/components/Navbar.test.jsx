@@ -45,20 +45,25 @@ describe('Navbar Component', () => {
         expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();
     });
 
-    it('Scenario B: Renders User Links and Cart Badge when logged in', () => {
+    it('Scenario B: Renders User Links and Cart Badge when logged in', async () => {
         // ARRANGE
-        const authValue = { user: { role: 'ROLE_USER' }, logout: vi.fn() };
+        const user = userEvent.setup();
+        const authValue = { user: { role: 'ROLE_USER', email: 'user@test.com' }, logout: vi.fn() };
         const cartValue = { totalItems: 3 };
 
         // ACT
         customRender(<Navbar />, { providerProps: { authValue, cartValue } });
 
+        // Check for the cart badge
+        expect(screen.getByText('3')).toBeInTheDocument();
+
+        // Open the user dropdown
+        const accountButton = screen.getByRole('button', { name: /account/i });
+        await user.click(accountButton);
+
         // ASSERT
         expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /orders/i })).toBeInTheDocument();
-
-        // Check for the cart badge
-        expect(screen.getByText('3')).toBeInTheDocument();
 
         // Standard users should NOT see the admin panel link
         expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();

@@ -41,7 +41,7 @@ describe('Navbar Component', () => {
         expect(screen.getByRole('link', { name: /register/i })).toBeInTheDocument();
 
         // They should NOT see the logout button or the admin panel
-        expect(screen.queryByRole('button', { name: /logout/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /log out/i })).not.toBeInTheDocument();
         expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();
     });
 
@@ -62,7 +62,7 @@ describe('Navbar Component', () => {
         await user.click(accountButton);
 
         // ASSERT
-        expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /log out/i })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /orders/i })).toBeInTheDocument();
 
         // Standard users should NOT see the admin panel link
@@ -84,5 +84,29 @@ describe('Navbar Component', () => {
 
         // ASSERT: Admin user SHOULD see the admin panel link
         expect(screen.getByRole('link', { name: /admin panel/i })).toBeInTheDocument();
+    });
+
+    it('Scenario D: Renders Logout Confirmation Modal', async () => {
+        const user = userEvent.setup();
+        const authValue = { user: {role: 'ROLE_USER', email: 'user@test.com'}, logout: vi.fn() };
+        const cartValue = { totalItems: 0 };
+
+        customRender(<Navbar />, { providerProps: { authValue, cartValue } });
+
+        // ACT: Open dropdown and click the first logout button
+        const accountButton = screen.getByRole('button', { name: /account/i });
+        await user.click(accountButton);
+        const logoutButton = screen.getByRole('button', { name: /log out/i });
+        await user.click(logoutButton);
+
+        // ASSERT: Modal appears
+        expect(screen.getByText('Ready to leave?')).toBeInTheDocument();
+
+        // ACT: Click the final "Log Out" button isnide the modal
+        const confirmLogoutButton = screen.getByRole('button', { name: /log out/i });
+        await user.click(confirmLogoutButton);
+
+        // ASSERT: Verify the logout function from context was actually triggered
+        expect(authValue.logout).toHaveBeenCalledTimes(1);
     });
 });

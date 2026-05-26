@@ -69,7 +69,7 @@ describe('Navbar Component', () => {
         expect(screen.queryByRole('link', { name: /admin panel/i })).not.toBeInTheDocument();
     });
 
-    it('Scenario C: Renders the Admin Panel link only for Admins', () => {
+    it('Scenario C: Renders the Admin Panel link only for Admins', async () => {
         // ARRANGE
         const user = userEvent.setup();
         const authValue = { user: { role: 'ROLE_ADMIN', email: 'admin@test.com' }, logout: vi.fn() };

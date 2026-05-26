@@ -71,11 +71,16 @@ describe('Navbar Component', () => {
 
     it('Scenario C: Renders the Admin Panel link only for Admins', () => {
         // ARRANGE
-        const authValue = { user: { role: 'ROLE_ADMIN' }, logout: vi.fn() };
+        const user = userEvent.setup();
+        const authValue = { user: { role: 'ROLE_ADMIN', email: 'admin@test.com' }, logout: vi.fn() };
         const cartValue = { totalItems: 0 };
 
         // ACT
         customRender(<Navbar />, { providerProps: { authValue, cartValue } });
+
+        // Open teh user dropdonw
+        const accountButton = screen.getByRole('button', { name: /account/i });
+        await user.click(accountButton);
 
         // ASSERT: Admin user SHOULD see the admin panel link
         expect(screen.getByRole('link', { name: /admin panel/i })).toBeInTheDocument();

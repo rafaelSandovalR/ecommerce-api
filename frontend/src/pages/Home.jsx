@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchAllProductsAPI, fetchCategoriesAPI } from "../services/productService";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-hot-toast";
@@ -191,10 +191,9 @@ export default function Home() {
 
               {/* The Loop (.map) */}
               {products.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition flex flex-col">
 
-                  {/* Product Image */}
-                  <div className="h-48 bg-gray-200 overflow-hidden group">
+                  <Link to={`/product/${product.id}`} className="h-48 bg-gray-200 overflow-hidden group block">
                     {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
@@ -206,16 +205,22 @@ export default function Home() {
                         No Image
                       </div>
                     )}
-                  </div>
+                  </Link>
 
-                  <div className="p-4">
-                    <h2 className="text-xl font-bold text-gray-800 line-clamp-1">{product.name}</h2>
+                  <div className="p-4 flex-grow flex flex-col">
+                    <Link to={`/product/${product.id}`}>
+                      <h2 className="text-xl font-bold text-gray-800 line-clamp-1 hover:text-blue-600 transition-colors">
+                        {product.name}
+                      </h2>
+                    </Link>
+                    
                     <p className="text-gray-600 mt-2 text-sm line-clamp-2 h-[40px]">{product.description}</p>
-                    <div className="mt-4 flex justify-between items-center">
+                    
+                    <div className="mt-auto pt-4 flex justify-between items-center">
                       <span className="text-blue-600 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
                       <button
                         onClick={() => handleAddToCart(product.id)}
-                        disabled={addingId === product.id} // Disable if currently adding this
+                        disabled={addingId === product.id}
                         className={`px-4 py-2 rounded-md transition text-white ${addingId === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
                           }`}
                       >

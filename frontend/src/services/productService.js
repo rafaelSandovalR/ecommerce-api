@@ -36,3 +36,7 @@ export const updateProductAPI = async (id, productData) => {
         body: JSON.stringify(productData),
     });
 };
+
+export const fetchProductAPI = async (id) => {
+    return await apiRequest(`/products/${id}`);
+}

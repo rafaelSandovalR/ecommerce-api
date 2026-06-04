@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ProductDetail from "./pages/ProductDetail";
 
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<Home />}/>
+        <Route path="/product/:id" element={<ProductDetail /> } />
 
         {/* User Protected Routes */}
         <Route element={<ProtectedRoute />}>
